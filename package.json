@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
-    "execute": "node dist/index.js",
-    "start": "npm run build && npm run execute"
+    "execute": "node dist/src/index.js",
+    "clean": "rm -rf dist",
+    "start": "npm run clean && npm run build && npm run execute"
   },
   "repository": {
     "type": "git",

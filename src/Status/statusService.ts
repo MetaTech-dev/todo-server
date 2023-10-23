@@ -1,4 +1,5 @@
 import { CreateStatusDTO, UpdateStatusDTO } from "./statusTypes";
+import prisma from "../../prisma";
 
 interface Status {
   title: string;
@@ -25,8 +26,14 @@ const statuses: Status[] = [
 ];
 
 export default class StatusService {
-  static list = () => {
-    return statuses;
+  static list = async () => {
+    const one = await prisma.status.findMany({
+      orderBy: {
+        position: "asc",
+      },
+    });
+    console.log("Status list", one);
+    return one;
   };
 
   static create = (status: CreateStatusDTO) => {

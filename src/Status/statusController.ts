@@ -4,8 +4,9 @@ import { CreateStatusDTO, UpdateStatusDTO } from "./statusTypes";
 import StatusService from "./statusService";
 
 export default class StatusController extends BaseController {
-  list = (_req: Request, res: Response) => {
-    const statuses = StatusService.list();
+  list = async (_req: Request, res: Response) => {
+    console.log("controller");
+    const statuses = await StatusService.list();
 
     return this.success(res, statuses);
   };
