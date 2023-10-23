@@ -11,11 +11,11 @@ export default class StatusController extends BaseController {
     return this.success(res, statuses);
   };
 
-  create = (req: Request, res: Response) => {
+  create = async (req: Request, res: Response) => {
     const { body }: { body: CreateStatusDTO } = req;
     console.log("Status create body", body);
 
-    const newStatus = StatusService.create(body);
+    const newStatus = await StatusService.create(body);
 
     return this.created(res, newStatus);
   };

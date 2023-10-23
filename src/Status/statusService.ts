@@ -27,25 +27,25 @@ const statuses: Status[] = [
 
 export default class StatusService {
   static list = async () => {
-    const one = await prisma.status.findMany({
+    const statusList = await prisma.status.findMany({
       orderBy: {
         position: "asc",
       },
     });
-    console.log("Status list", one);
-    return one;
+    console.log("Status list", statusList);
+    return statusList;
   };
 
-  static create = (status: CreateStatusDTO) => {
-    // TODO: replace this with a call to the database
+  static create = async (status: CreateStatusDTO) => {
     const newStatus = {
       ...status,
-      id: Math.random().toString(),
     };
 
-    statuses.push(newStatus);
+    const createdStatus = await prisma.status.create({
+      data: newStatus,
+    });
 
-    return newStatus;
+    return createdStatus;
   };
 
   static update = (status: UpdateStatusDTO) => {
