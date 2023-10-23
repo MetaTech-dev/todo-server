@@ -1,91 +1,74 @@
 import { CreateStatusDTO, UpdateStatusDTO } from "./statusTypes";
 import prisma from "../../prisma";
+import { Prisma } from "@prisma/client";
 
 interface Status {
   title: string;
   position: number;
-  id: string;
+  id: number;
 }
-
-const statuses: Status[] = [
-  {
-    title: "Ready",
-    position: 1,
-    id: "1",
-  },
-  {
-    title: "In Progress",
-    position: 2,
-    id: "2",
-  },
-  {
-    title: "Done",
-    position: 3,
-    id: "3",
-  },
-];
 
 export default class StatusService {
   static list = async () => {
-    const statusList = await prisma.status.findMany({
-      orderBy: {
-        position: "asc",
-      },
-    });
-    console.log("Status list", statusList);
-    return statusList;
-  };
-
-  static create = async (status: CreateStatusDTO) => {
-    const newStatus = {
-      ...status,
-    };
-
-    const createdStatus = await prisma.status.create({
-      data: newStatus,
-    });
-
-    return createdStatus;
-  };
-
-  static update = (status: UpdateStatusDTO) => {
-    // TODO: replace this with a call to the database
-
-    const theStatus = statuses.find((status) => status.id === status.id);
-
-    if (!theStatus) {
-      return null;
+    try {
+      const statusList = await prisma.status.findMany({
+        orderBy: {
+          position: "asc",
+        },
+      });
+      return statusList;
+    } catch (err) {
+      console.error(err);
+      return err as Prisma.PrismaClientKnownRequestError;
     }
-
-    const updatedStatus = {
-      ...theStatus,
-      ...status,
-    };
-
-    return updatedStatus;
   };
 
-  static remove = (id: string) => {
-    // TODO: replace this with a call to the database
+  static create = async (
+    status: CreateStatusDTO
+  ): Promise<Status | Prisma.PrismaClientKnownRequestError> => {
+    try {
+      const createdStatus = await prisma.status.create({
+        data: status,
+      });
 
-    const theStatus = statuses.find((status) => status.id === id);
-
-    if (!theStatus) {
-      return false;
+      return createdStatus;
+    } catch (err) {
+      console.error(err);
+      return err as Prisma.PrismaClientKnownRequestError;
     }
-
-    return true;
   };
 
-  static getOne = (id: string) => {
-    // TODO: replace this with a call to the database
+  static update = async (
+    status: UpdateStatusDTO
+  ): Promise<Status | Prisma.PrismaClientKnownRequestError> => {
+    try {
+      const updatedStatus = await prisma.status.update({
+        where: {
+          id: status.id,
+        },
+        data: status,
+      });
 
-    const theStatus = statuses.find((status) => status.id === id);
-
-    if (!theStatus) {
-      return null;
+      return updatedStatus;
+    } catch (err) {
+      console.error(err);
+      return err as Prisma.PrismaClientKnownRequestError;
     }
+  };
 
-    return theStatus;
+  static remove = async (
+    id: number
+  ): Promise<boolean | Prisma.PrismaClientKnownRequestError> => {
+    try {
+      await prisma.status.delete({
+        where: {
+          id,
+        },
+      });
+      return true;
+    } catch (err) {
+      console.error(err);
+      return err as Prisma.PrismaClientKnownRequestError;
+    }
   };
 }
