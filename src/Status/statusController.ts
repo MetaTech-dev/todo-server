@@ -67,8 +67,8 @@ export default class StatusController extends BaseController {
       // }
 
       return this.noContent(res);
-    } catch (e) {
-      return this.badRequest(res, e);
+    } catch (err) {
+      return this.badRequest(res, err);
     }
   };
 }

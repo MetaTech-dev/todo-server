@@ -1,12 +1,12 @@
-import { CreateStatusDTO, UpdateStatusDTO } from "./statusTypes";
+import { UpdateStatusDTO } from "./statusTypes";
 import prisma from "../../prisma";
-import { Prisma } from "@prisma/client";
+import { Prisma, Status } from "@prisma/client";
 
-interface Status {
-  title: string;
-  position: number;
-  id: number;
-}
+// interface Status {
+//   title: string;
+//   position: number;
+//   id: number;
+// }
 
 export default class StatusService {
   static list = async () => {
@@ -24,7 +24,7 @@ export default class StatusService {
   };
 
   static create = async (
-    status: CreateStatusDTO
+    status: Prisma.StatusCreateInput
   ): Promise<Status | Prisma.PrismaClientKnownRequestError> => {
     try {
       const createdStatus = await prisma.status.create({

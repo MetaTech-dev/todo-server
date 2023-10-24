@@ -14,7 +14,7 @@ model ToDo {
   title         String
   description   String
   createdDate   DateTime    @default(now())
-  dueDate       DateTime
+  dueDate       DateTime?
   priority      String
   status        String
   id            Int         @id @default(autoincrement())
