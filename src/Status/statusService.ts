@@ -2,12 +2,6 @@ import { UpdateStatusDTO } from "./statusTypes";
 import prisma from "../../prisma";
 import { Prisma, Status } from "@prisma/client";
 
-// interface Status {
-//   title: string;
-//   position: number;
-//   id: number;
-// }
-
 export default class StatusService {
   static list = async () => {
     try {
@@ -37,6 +31,8 @@ export default class StatusService {
       return err as Prisma.PrismaClientKnownRequestError;
     }
   };
+
+  // TODO: handle errors for these
 
   static update = async (
     status: UpdateStatusDTO

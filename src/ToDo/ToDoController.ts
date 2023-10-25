@@ -68,9 +68,9 @@ export default class ToDoController extends BaseController {
     try {
       const theToDo = await ToDoService.getOne(Number(id));
 
-      // if (!theToDo) {
-      //   return this.notFound(res, { message: "ToDo not found" });
-      // }
+      if (!theToDo) {
+        return this.notFound(res, { message: "ToDo not found" });
+      }
 
       return this.success(res, theToDo);
     } catch (err) {

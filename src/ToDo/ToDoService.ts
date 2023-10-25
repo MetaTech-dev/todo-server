@@ -3,7 +3,9 @@ import { Prisma, ToDo } from "@prisma/client";
 import { UpdateToDoDTO } from "./toDoTypes";
 
 export default class ToDoService {
-  static list = async () => {
+  static list = async (): Promise<
+    ToDo[] | Prisma.PrismaClientKnownRequestError
+  > => {
     try {
       const allToDos = await prisma.toDo.findMany({
         orderBy: {
@@ -50,6 +52,8 @@ export default class ToDoService {
       return err as Prisma.PrismaClientKnownRequestError;
     }
   };
+
+  // TODO: handle errors for these
 
   static remove = async (
     id: number

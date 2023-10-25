@@ -59,9 +59,8 @@ export default class StatusController extends BaseController {
     }
 
     try {
-      // const deleted =
       await StatusService.remove(Number(id));
-
+      // TODO: handle errors
       // if (!deleted) {
       //   return this.notFound(res, { message: "Status not found" });
       // }
