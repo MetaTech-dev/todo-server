@@ -63,9 +63,37 @@ export default class StatusService {
     id: number
   ): Promise<boolean | Prisma.PrismaClientKnownRequestError> => {
     try {
+      // find ID of status to delete
+      const statusToDelete = await prisma.status.findUnique({
+        where: {
+          id,
+        },
+        select: {
+          position: true,
+        },
+      });
+      // if statusToDelete is null, throw error
+      if (!statusToDelete) {
+        throw new Error("Status not found, unable to Delete");
+      }
+      // delete the desired status
       await prisma.status.delete({
         where: {
           id,
+        },
+      });
+
+      //update the position of all statuses after the deleted status
+      await prisma.status.updateMany({
+        where: {
+          position: {
+            gt: statusToDelete.position,
+          },
+        },
+        data: {
+          position: {
+            decrement: 1,
+          },
         },
       });
       return true;
