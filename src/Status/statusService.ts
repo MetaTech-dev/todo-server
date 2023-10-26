@@ -21,8 +21,15 @@ export default class StatusService {
     status: Prisma.StatusCreateInput
   ): Promise<Status | Prisma.PrismaClientKnownRequestError> => {
     try {
+      const existingStatus = await prisma.status.findMany({});
+
+      const newPosition = existingStatus.length + 1;
+
       const createdStatus = await prisma.status.create({
-        data: status,
+        data: {
+          ...status,
+          position: newPosition,
+        },
       });
 
       return createdStatus;
@@ -62,6 +69,22 @@ export default class StatusService {
         },
       });
       return true;
+    } catch (err) {
+      console.error(err);
+      return err as Prisma.PrismaClientKnownRequestError;
+    }
+  };
+
+  static getOne = async (
+    id: number
+  ): Promise<Status | Prisma.PrismaClientKnownRequestError | null> => {
+    try {
+      const theOneStatus = await prisma.status.findUnique({
+        where: {
+          id,
+        },
+      });
+      return theOneStatus;
     } catch (err) {
       console.error(err);
       return err as Prisma.PrismaClientKnownRequestError;

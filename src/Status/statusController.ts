@@ -21,10 +21,7 @@ export default class StatusController extends BaseController {
         return this.badRequest(res, { message: "request body is required" });
       } else if (!body.title) {
         return this.badRequest(res, { message: "Title is required" });
-      } else if (!body.position) {
-        return this.badRequest(res, { message: "Position is required" });
       }
-
       const newStatus = await StatusService.create(body);
 
       return this.created(res, newStatus);
@@ -66,6 +63,26 @@ export default class StatusController extends BaseController {
       // }
 
       return this.noContent(res);
+    } catch (err) {
+      return this.badRequest(res, err);
+    }
+  };
+
+  getOne = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    console.log("Status getOne id", id);
+    if (!id) {
+      return this.badRequest(res, { message: "ID is required" });
+    } else if (isNaN(Number(id))) {
+      return this.badRequest(res, { message: "ID must be a number" });
+    }
+    try {
+      const theStatus = await StatusService.getOne(Number(id));
+
+      if (!theStatus) {
+        return this.notFound(res, { message: "Status not found" });
+      }
+      return this.success(res, theStatus);
     } catch (err) {
       return this.badRequest(res, err);
     }

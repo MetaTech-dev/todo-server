@@ -1,6 +1,6 @@
 import prisma from "../../prisma";
 import { Prisma, ToDo } from "@prisma/client";
-import { UpdateToDoDTO } from "./toDoTypes";
+import { CreateToDoDTO, UpdateToDoDTO } from "./toDoTypes";
 
 export default class ToDoService {
   static list = async (): Promise<
@@ -20,7 +20,7 @@ export default class ToDoService {
   };
 
   static create = async (
-    toDo: Prisma.ToDoCreateInput
+    toDo: CreateToDoDTO
   ): Promise<ToDo | Prisma.PrismaClientKnownRequestError> => {
     console.log("hello from ToDoService.create");
     try {

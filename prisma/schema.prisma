@@ -16,12 +16,14 @@ model ToDo {
   createdDate   DateTime    @default(now())
   dueDate       DateTime?
   priority      String
-  status        String
+  status        Status      @relation(fields: [statusId], references: [id])
+  statusId      Int
   id            Int         @id @default(autoincrement())
 }
 
 model Status {
   title         String
-  position      Int
+  position      Int         
   id            Int         @id @default(autoincrement())
+  todos         ToDo[]
 }
