@@ -4,53 +4,77 @@ import { CreateToDoDTO, UpdateToDoDTO } from "./toDoTypes";
 import ToDoService from "./ToDoService";
 
 export default class ToDoController extends BaseController {
-  list = (_req: Request, res: Response) => {
-    const toDos = ToDoService.list();
-
-    return this.success(res, toDos);
+  list = async (_req: Request, res: Response) => {
+    try {
+      const toDos = await ToDoService.list();
+      return this.success(res, toDos);
+    } catch (err) {
+      return this.badRequest(res, err);
+    }
   };
 
-  create = (req: Request, res: Response) => {
+  create = async (req: Request, res: Response) => {
     const { body }: { body: CreateToDoDTO } = req;
-    console.log("ToDo create body", body);
+    try {
+      const newToDo = await ToDoService.create(body);
 
-    const newToDo = ToDoService.create(body);
-
-    return this.created(res, newToDo);
+      return this.created(res, newToDo);
+    } catch (err) {
+      return this.badRequest(res, err);
+    }
   };
 
-  update = (req: Request, res: Response) => {
-    const { body }: { body: UpdateToDoDTO } = req;
-    console.log("ToDo update body", body);
+  update = async (req: Request, res: Response) => {
+    try {
+      const { body }: { body: UpdateToDoDTO } = req;
 
-    const updatedToDo = ToDoService.update(body);
+      const updatedToDo = await ToDoService.update(body);
 
-    return this.created(res, updatedToDo);
+      return this.created(res, updatedToDo);
+    } catch (err) {
+      return this.badRequest(res, err);
+    }
   };
 
-  remove = (req: Request, res: Response) => {
+  remove = async (req: Request, res: Response) => {
     const { id } = req.params;
     console.log("ToDo delete id", id);
-
-    const deleted = ToDoService.remove(id);
-
-    if (!deleted) {
-      return this.notFound(res, { message: "ToDo not found" });
+    if (!id) {
+      return this.badRequest(res, { message: "ID is required" });
+    } else if (isNaN(Number(id))) {
+      return this.badRequest(res, { message: "ID must be a number" });
     }
+    try {
+      await ToDoService.remove(Number(id));
 
-    return this.noContent(res);
+      // if (!deleted) {
+      //   return this.notFound(res, { message: "ToDo not found" });
+      // }
+
+      return this.noContent(res);
+    } catch (err) {
+      return this.badRequest(res, err);
+    }
   };
 
-  getOne = (req: Request, res: Response) => {
+  getOne = async (req: Request, res: Response) => {
     const { id } = req.params;
     console.log("ToDo getOne id", id);
-
-    const theToDo = ToDoService.getOne(id);
-
-    if (!theToDo) {
-      return this.notFound(res, { message: "ToDo not found" });
+    if (!id) {
+      return this.badRequest(res, { message: "ID is required" });
+    } else if (isNaN(Number(id))) {
+      return this.badRequest(res, { message: "ID must be a number" });
     }
+    try {
+      const theToDo = await ToDoService.getOne(Number(id));
 
-    return this.success(res, theToDo);
+      if (!theToDo) {
+        return this.notFound(res, { message: "ToDo not found" });
+      }
+
+      return this.success(res, theToDo);
+    } catch (err) {
+      return this.badRequest(res, err);
+    }
   };
 }

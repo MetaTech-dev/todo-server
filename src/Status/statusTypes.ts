@@ -6,5 +6,5 @@ export interface CreateStatusDTO {
 export interface UpdateStatusDTO {
   title?: string;
   position?: number;
-  id: string;
+  id: number;
 }

@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
-    "execute": "node dist/index.js",
-    "start": "npm run build && npm run execute"
+    "execute": "node dist/src/index.js",
+    "clean": "rm -rf dist",
+    "start": "npm run clean && npm run build && npm run execute"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
   },
   "homepage": "https://github.com/MetaTech-dev/todo-server#readme",
   "dependencies": {
+    "@prisma/client": "^5.1.1",
     "lodash": "^4.17.21",
     "typescript": "^5.1.6"
   },
@@ -29,6 +31,7 @@
     "@types/lodash": "^4.14.195",
     "@types/node": "^20.4.2",
     "express": "^4.18.2",
-    "http-codes": "^1.0.0"
+    "http-codes": "^1.0.0",
+    "prisma": "^5.1.1"
   }
 }

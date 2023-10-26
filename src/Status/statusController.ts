@@ -4,53 +4,70 @@ import { CreateStatusDTO, UpdateStatusDTO } from "./statusTypes";
 import StatusService from "./statusService";
 
 export default class StatusController extends BaseController {
-  list = (_req: Request, res: Response) => {
-    const statuses = StatusService.list();
+  list = async (_req: Request, res: Response) => {
+    try {
+      const statuses = await StatusService.list();
 
-    return this.success(res, statuses);
+      return this.success(res, statuses);
+    } catch (e) {
+      return this.badRequest(res, e);
+    }
   };
 
-  create = (req: Request, res: Response) => {
-    const { body }: { body: CreateStatusDTO } = req;
-    console.log("Status create body", body);
+  create = async (req: Request, res: Response) => {
+    try {
+      const { body }: { body: CreateStatusDTO } = req;
+      if (!body) {
+        return this.badRequest(res, { message: "request body is required" });
+      } else if (!body.title) {
+        return this.badRequest(res, { message: "Title is required" });
+      } else if (!body.position) {
+        return this.badRequest(res, { message: "Position is required" });
+      }
 
-    const newStatus = StatusService.create(body);
+      const newStatus = await StatusService.create(body);
 
-    return this.created(res, newStatus);
+      return this.created(res, newStatus);
+    } catch (e) {
+      return this.badRequest(res, e);
+    }
   };
 
-  update = (req: Request, res: Response) => {
-    const { body }: { body: UpdateStatusDTO } = req;
-    console.log("Status update body", body);
+  update = async (req: Request, res: Response) => {
+    try {
+      const { body }: { body: UpdateStatusDTO } = req;
+      if (!body) {
+        return this.badRequest(res, { message: "request body is required" });
+      } else if (!body.id) {
+        return this.badRequest(res, { message: "ID is required" });
+      }
 
-    const updatedStatus = StatusService.update(body);
+      const updatedStatus = await StatusService.update(body);
 
-    return this.created(res, updatedStatus);
+      return this.created(res, updatedStatus);
+    } catch (e) {
+      return this.badRequest(res, e);
+    }
   };
 
-  remove = (req: Request, res: Response) => {
+  remove = async (req: Request, res: Response) => {
     const { id } = req.params;
-    console.log("Status delete id", id);
-
-    const deleted = StatusService.remove(id);
-
-    if (!deleted) {
-      return this.notFound(res, { message: "Status not found" });
+    if (!id) {
+      return this.badRequest(res, { message: "ID is required" });
+    } else if (isNaN(Number(id))) {
+      return this.badRequest(res, { message: "ID must be a number" });
     }
 
-    return this.noContent(res);
-  };
+    try {
+      await StatusService.remove(Number(id));
+      // TODO: handle errors
+      // if (!deleted) {
+      //   return this.notFound(res, { message: "Status not found" });
+      // }
 
-  getOne = (req: Request, res: Response) => {
-    const { id } = req.params;
-    console.log("Status getOne id", id);
-
-    const theStatus = StatusService.getOne(id);
-
-    if (!theStatus) {
-      return this.notFound(res, { message: "Status not found" });
+      return this.noContent(res);
+    } catch (err) {
+      return this.badRequest(res, err);
     }
-
-    return this.success(res, theStatus);
   };
 }
