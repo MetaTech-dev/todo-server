@@ -61,7 +61,7 @@ export default class StatusService {
 
   static remove = async (
     id: number
-  ): Promise<boolean | Prisma.PrismaClientKnownRequestError> => {
+  ): Promise<boolean | Error | Prisma.PrismaClientKnownRequestError> => {
     try {
       // find ID of status to delete
       const statusToDelete = await prisma.status.findUnique({
@@ -98,7 +98,15 @@ export default class StatusService {
       });
       return true;
     } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code === "P2003") {
+          console.log("Unable to delete status, it is in use", err.code);
+
+          // throw new Error("Unable to delete status, it is in use");  Circle back to this
+        }
+      }
       console.error(err);
+
       return err as Prisma.PrismaClientKnownRequestError;
     }
   };

@@ -38,7 +38,6 @@ export default class ToDoController extends BaseController {
 
   remove = async (req: Request, res: Response) => {
     const { id } = req.params;
-    console.log("ToDo delete id", id);
     if (!id) {
       return this.badRequest(res, { message: "ID is required" });
     } else if (isNaN(Number(id))) {
@@ -59,7 +58,6 @@ export default class ToDoController extends BaseController {
 
   getOne = async (req: Request, res: Response) => {
     const { id } = req.params;
-    console.log("ToDo getOne id", id);
     if (!id) {
       return this.badRequest(res, { message: "ID is required" });
     } else if (isNaN(Number(id))) {
