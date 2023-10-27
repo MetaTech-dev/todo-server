@@ -1,6 +1,5 @@
-import httpCodes from 'http-codes';
-import { Response } from 'express';
-import { isObject } from 'lodash';
+import httpCodes from "http-codes";
+import { Response } from "express";
 
 export default class BaseController {
   serverError: (res: Response, errr: any) => any;
@@ -14,13 +13,13 @@ export default class BaseController {
     this.serverError = (res, errr) =>
       res.status(httpCodes.INTERNAL_SERVER_ERROR).json(errr);
 
-    this.badRequest = (res, errors, message = '') => {
-      const err = isObject(errors)
-        ? errors
+    this.badRequest = (res, error: Error | null, message = "") => {
+      const err = error
+        ? {
+            message: error.message || "Bad request",
+          }
         : {
-            errors,
-            message: message || 'Bad request',
-            code: httpCodes.BAD_REQUEST,
+            message: message || "Bad request",
           };
 
       return res.status(httpCodes.BAD_REQUEST).json(err);

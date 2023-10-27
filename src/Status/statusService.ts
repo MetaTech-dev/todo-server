@@ -150,6 +150,7 @@ export default class StatusService {
       });
       // if statusToDelete is null, throw error
       if (!statusToDelete) {
+        console.log("status", statusToDelete);
         throw new Error("Status not found, unable to Delete");
       }
       // delete the desired status
@@ -177,14 +178,12 @@ export default class StatusService {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
         // if status is in use, throw error
         if (err.code === "P2003") {
-          console.log("Unable to delete status, it is in use", err.code);
-
-          // throw new Error("Unable to delete status, it is in use");  Circle back to this
+          throw new Error("Unable to delete status, it is in use");
         }
       }
       console.error(err);
 
-      return err as Prisma.PrismaClientKnownRequestError;
+      throw err as Prisma.PrismaClientKnownRequestError;
     }
   };
 

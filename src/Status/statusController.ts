@@ -64,6 +64,7 @@ export default class StatusController extends BaseController {
 
       return this.noContent(res);
     } catch (err) {
+      console.log("ERROR", err);
       return this.badRequest(res, err);
     }
   };
