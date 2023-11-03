@@ -15,9 +15,9 @@ export default class StatusController extends BaseController {
   };
 
   create = async (req: Request, res: Response) => {
+    const { body }: { body: CreateStatusDTO } = req;
     try {
-      const { body }: { body: CreateStatusDTO } = req;
-      if (!body) {
+      if (Object.keys(body).length === 0) {
         return this.badRequest(res, { message: "request body is required" });
       } else if (!body.title) {
         return this.badRequest(res, { message: "Title is required" });
@@ -33,9 +33,9 @@ export default class StatusController extends BaseController {
   };
 
   update = async (req: Request, res: Response) => {
+    const { body }: { body: UpdateStatusDTO } = req;
     try {
-      const { body }: { body: UpdateStatusDTO } = req;
-      if (!body) {
+      if (Object.keys(body).length === 0) {
         return this.badRequest(res, { message: "request body is required" });
       } else if (!body.id) {
         return this.badRequest(res, { message: "ID is required" });
@@ -43,11 +43,7 @@ export default class StatusController extends BaseController {
         return this.badRequest(res, { message: "ID must be a number" });
       } else if (body.title && typeof body.title !== "string") {
         return this.badRequest(res, { message: "Title must be a string" });
-      } else if (
-        body.title !== undefined &&
-        body.title !== null &&
-        body.title.length < 1
-      ) {
+      } else if (!body.title) {
         return this.badRequest(res, {
           message: "Title must be at least 1 character",
         });
@@ -63,29 +59,27 @@ export default class StatusController extends BaseController {
 
   remove = async (req: Request, res: Response) => {
     const { id } = req.params;
-    if (isNaN(Number(id))) {
-      return this.badRequest(res, { message: "ID must be a number" });
-    }
 
     try {
+      if (isNaN(Number(id))) {
+        return this.badRequest(res, { message: "ID must be a number" });
+      }
       await StatusService.remove(Number(id));
 
       return this.noContent(res);
     } catch (err) {
-      console.log("ERROR", err);
       return this.badRequest(res, err);
     }
   };
 
   getOne = async (req: Request, res: Response) => {
     const { id } = req.params;
-    console.log("Status getOne id", id);
-    if (!id) {
-      return this.badRequest(res, { message: "ID is required" });
-    } else if (isNaN(Number(id))) {
-      return this.badRequest(res, { message: "ID must be a number" });
-    }
     try {
+      if (!id) {
+        return this.badRequest(res, { message: "ID is required" });
+      } else if (isNaN(Number(id))) {
+        return this.badRequest(res, { message: "ID must be a number" });
+      }
       const theStatus = await StatusService.getOne(Number(id));
 
       if (!theStatus) {
