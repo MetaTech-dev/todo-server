@@ -21,6 +21,8 @@ export default class StatusController extends BaseController {
         return this.badRequest(res, { message: "request body is required" });
       } else if (!body.title) {
         return this.badRequest(res, { message: "Title is required" });
+      } else if (typeof body.title !== "string") {
+        return this.badRequest(res, { message: "Title must be a string" });
       }
       const newStatus = await StatusService.create(body);
 
@@ -37,6 +39,18 @@ export default class StatusController extends BaseController {
         return this.badRequest(res, { message: "request body is required" });
       } else if (!body.id) {
         return this.badRequest(res, { message: "ID is required" });
+      } else if (body.id && typeof body.id !== "number") {
+        return this.badRequest(res, { message: "ID must be a number" });
+      } else if (body.title && typeof body.title !== "string") {
+        return this.badRequest(res, { message: "Title must be a string" });
+      } else if (
+        body.title !== undefined &&
+        body.title !== null &&
+        body.title.length < 1
+      ) {
+        return this.badRequest(res, {
+          message: "Title must be at least 1 character",
+        });
       }
 
       const updatedStatus = await StatusService.update(body);
@@ -49,18 +63,12 @@ export default class StatusController extends BaseController {
 
   remove = async (req: Request, res: Response) => {
     const { id } = req.params;
-    if (!id) {
-      return this.badRequest(res, { message: "ID is required" });
-    } else if (isNaN(Number(id))) {
+    if (isNaN(Number(id))) {
       return this.badRequest(res, { message: "ID must be a number" });
     }
 
     try {
       await StatusService.remove(Number(id));
-      // TODO: handle errors
-      // if (!deleted) {
-      //   return this.notFound(res, { message: "Status not found" });
-      // }
 
       return this.noContent(res);
     } catch (err) {

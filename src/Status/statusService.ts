@@ -13,7 +13,7 @@ export default class StatusService {
       return statusList;
     } catch (err) {
       console.error(err);
-      return err as Prisma.PrismaClientKnownRequestError;
+      throw err as Prisma.PrismaClientKnownRequestError;
     }
   };
 
@@ -35,7 +35,7 @@ export default class StatusService {
       return createdStatus;
     } catch (err) {
       console.error(err);
-      return err as Prisma.PrismaClientKnownRequestError;
+      throw err as Prisma.PrismaClientKnownRequestError;
     }
   };
 
@@ -131,7 +131,7 @@ export default class StatusService {
       return updatedStatus;
     } catch (err) {
       console.error(err);
-      return err as Prisma.PrismaClientKnownRequestError;
+      throw err as Prisma.PrismaClientKnownRequestError;
     }
   };
 
@@ -150,7 +150,6 @@ export default class StatusService {
       });
       // if statusToDelete is null, throw error
       if (!statusToDelete) {
-        console.log("status", statusToDelete);
         throw new Error("Status not found, unable to Delete");
       }
       // delete the desired status
