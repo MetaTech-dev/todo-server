@@ -15,7 +15,7 @@ export default class ToDoService {
       return allToDos;
     } catch (err) {
       console.error(err);
-      return err as Prisma.PrismaClientKnownRequestError;
+      throw err as Prisma.PrismaClientKnownRequestError;
     }
   };
 
@@ -30,8 +30,14 @@ export default class ToDoService {
 
       return createdTodo;
     } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === "P2003"
+      ) {
+        throw new Error("Status not found, please try again");
+      }
       console.error(err);
-      return err as Prisma.PrismaClientKnownRequestError;
+      throw err as Prisma.PrismaClientKnownRequestError;
     }
   };
 
@@ -48,8 +54,19 @@ export default class ToDoService {
 
       return updatedToDo;
     } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === "P2025"
+      ) {
+        throw new Error("ToDo not found, can not update");
+      } else if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === "P2003"
+      ) {
+        throw new Error("Status not found, please try again");
+      }
       console.error(err);
-      return err as Prisma.PrismaClientKnownRequestError;
+      throw err as Prisma.PrismaClientKnownRequestError;
     }
   };
 
@@ -64,10 +81,17 @@ export default class ToDoService {
           id,
         },
       });
+
       return true;
     } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === "P2025"
+      ) {
+        throw new Error("ToDo not found, can not delete");
+      }
       console.error(err);
-      return err as Prisma.PrismaClientKnownRequestError;
+      throw err as Prisma.PrismaClientKnownRequestError;
     }
   };
 
@@ -83,7 +107,7 @@ export default class ToDoService {
       return theOneToDo;
     } catch (err) {
       console.error(err);
-      return err as Prisma.PrismaClientKnownRequestError;
+      throw err as Prisma.PrismaClientKnownRequestError;
     }
   };
 }

@@ -9,8 +9,8 @@ router.get("/", list);
 router.post("/", create);
 router.put("/", update);
 router.delete("/", (_req, res) => {
-    return res.status(400).json({ message: "ID is required" });
-};
+  return res.status(400).json({ message: "ID is required" });
+});
 router.delete("/:id", remove);
 router.get("/:id", getOne);
 
