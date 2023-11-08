@@ -34,6 +34,13 @@ export default class StatusService {
 
       return createdStatus;
     } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code === "P2002") {
+          throw new Error(
+            "Status name is already in use, please choose another"
+          );
+        }
+      }
       console.error(err);
       throw err as Prisma.PrismaClientKnownRequestError;
     }
@@ -130,6 +137,13 @@ export default class StatusService {
 
       return updatedStatus;
     } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code === "P2002") {
+          throw new Error(
+            "Status name is already in use, please choose another"
+          );
+        }
+      }
       console.error(err);
       throw err as Prisma.PrismaClientKnownRequestError;
     }
