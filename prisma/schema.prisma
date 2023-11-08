@@ -25,5 +25,5 @@ model Status {
   title         String      @unique
   position      Int         
   id            Int         @id @default(autoincrement())
-  todos         ToDo[]
+  toDos         ToDo[]
 }

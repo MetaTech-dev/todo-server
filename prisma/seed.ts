@@ -3,40 +3,42 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const seed = async () => {
-  const freshStart = await prisma.status.createMany({
-    data: [
-      {
-        title: "Ready",
-        position: 1,
-      },
-      {
-        title: "In Progress",
-        position: 2,
-      },
-      {
-        title: "Done",
-        position: 3,
-      },
-    ],
-    skipDuplicates: true,
-  });
-
-  const readyStatus = await prisma.status.findUnique({
+  const ready = await prisma.status.upsert({
     where: { title: "Ready" },
+    update: {},
+    create: {
+      title: "Ready",
+      position: 1,
+      toDos: {
+        create: [
+          {
+            title: "Welcome to toDo!",
+            description: "Create your first toDo to get started",
+            priority: "low",
+          },
+        ],
+      },
+    },
   });
 
-  if (readyStatus) {
-    await prisma.toDo.create({
-      data: {
-        title: "Welcome to toDo!",
-        description: "Create your first toDo to get started",
-        priority: "low",
-        statusId: readyStatus.id,
-      },
-    });
-  }
+  const inProgress = await prisma.status.upsert({
+    where: { title: "In Progress" },
+    update: {},
+    create: {
+      title: "In Progress",
+      position: 2,
+    },
+  });
 
-  console.log(freshStart);
+  const done = await prisma.status.upsert({
+    where: { title: "Done" },
+    update: {},
+    create: {
+      title: "Done",
+      position: 3,
+    },
+  });
+  console.log(ready, inProgress, done);
 };
 
 seed()
