@@ -1,22 +1,18 @@
 export interface CreateToDoDTO {
   title: string;
   description: string;
-  author?: string;
   createdDate?: string;
   dueDate?: string | Date;
-  assignee?: string;
   priority: string;
-  status: string;
+  statusId: number;
 }
 
 export interface UpdateToDoDTO {
   title?: string;
   description?: string;
-  author?: string;
   createdDate?: string;
   dueDate?: string | Date;
-  assignee?: string;
   priority?: string;
-  status?: string;
+  statusId?: number;
   id: number;
 }
