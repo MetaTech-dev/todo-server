@@ -34,12 +34,14 @@ export default class StatusController extends BaseController {
 
   update = async (req: Request, res: Response) => {
     const { body }: { body: UpdateStatusDTO } = req;
+    const { id } = req.params;
+
     try {
       if (Object.keys(body).length === 0) {
         return this.badRequest(res, { message: "request body is required" });
-      } else if (!body.id) {
+      } else if (!id) {
         return this.badRequest(res, { message: "ID is required" });
-      } else if (body.id && typeof body.id !== "number") {
+      } else if (id && isNaN(Number(id))) {
         return this.badRequest(res, { message: "ID must be a number" });
       } else if (body.title && typeof body.title !== "string") {
         return this.badRequest(res, { message: "Title must be a string" });
