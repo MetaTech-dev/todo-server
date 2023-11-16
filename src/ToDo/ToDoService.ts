@@ -22,7 +22,6 @@ export default class ToDoService {
   static create = async (
     toDo: CreateToDoDTO
   ): Promise<ToDo | Prisma.PrismaClientKnownRequestError> => {
-    console.log("hello from ToDoService.create");
     try {
       const createdTodo = await prisma.toDo.create({
         data: toDo,
