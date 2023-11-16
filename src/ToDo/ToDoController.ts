@@ -59,6 +59,7 @@ export default class ToDoController extends BaseController {
 
   update = async (req: Request, res: Response) => {
     const { body }: { body: UpdateToDoDTO } = req;
+    const { id } = req.params;
     try {
       if (Object.keys(body).length === 0) {
         return this.badRequest(res, { message: "request body is required" });
@@ -83,9 +84,9 @@ export default class ToDoController extends BaseController {
         });
       } else if (body.statusId && typeof body.statusId !== "number") {
         return this.badRequest(res, { message: "Status ID must be a number" });
-      } else if (!body.id) {
+      } else if (!id) {
         return this.badRequest(res, { message: "ID is required" });
-      } else if (typeof body.id !== "number") {
+      } else if (id && isNaN(Number(id))) {
         return this.badRequest(res, { message: "ID must be a number" });
       }
       const updatedToDo = await ToDoService.update(body);
