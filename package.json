@@ -23,7 +23,6 @@
   "dependencies": {
     "@prisma/client": "^5.1.1",
     "cors": "^2.8.5",
-    "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "typescript": "^5.1.6"
   },
