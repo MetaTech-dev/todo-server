@@ -3,11 +3,13 @@ import StatusController from "./statusController";
 
 const router = express.Router();
 
-const { list, create, update, remove, getOne } = new StatusController();
+const { list, create, update, updateAll, remove, getOne } =
+  new StatusController();
 
 router.get("/", list);
 router.post("/", create);
 router.put("/:id", update);
+router.put("/", updateAll);
 router.delete("/", (_req, res) => {
   return res.status(400).json({ message: "ID is required" });
 });

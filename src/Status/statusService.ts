@@ -62,7 +62,7 @@ export default class StatusService {
       }
 
       // Get the starting position
-      const startingPosition = existingStatus.position;
+      // const startingPosition = existingStatus.position;
 
       const updatedStatus = await prisma.status.update({
         where: {
@@ -73,67 +73,67 @@ export default class StatusService {
 
       // Get the new position
 
-      const newPosition = updatedStatus.position;
+      // const newPosition = updatedStatus.position;
 
-      // check if the position has changed
-      if (newPosition !== startingPosition) {
-        // if it has, update the position of all impacted statuses
-        if (newPosition > startingPosition) {
-          await prisma.status.updateMany({
-            where: {
-              AND: [
-                {
-                  position: {
-                    gt: startingPosition,
-                  },
-                },
-                {
-                  position: {
-                    lte: newPosition,
-                  },
-                },
-                {
-                  NOT: {
-                    id: status.id, // Exclude the updatedStatus
-                  },
-                },
-              ],
-            },
-            data: {
-              position: {
-                decrement: 1,
-              },
-            },
-          });
-        } else if (newPosition < startingPosition) {
-          await prisma.status.updateMany({
-            where: {
-              AND: [
-                {
-                  position: {
-                    lt: startingPosition,
-                  },
-                },
-                {
-                  position: {
-                    gte: newPosition,
-                  },
-                },
-                {
-                  NOT: {
-                    id: status.id, // Exclude the updatedStatus
-                  },
-                },
-              ],
-            },
-            data: {
-              position: {
-                increment: 1,
-              },
-            },
-          });
-        }
-      }
+      // // check if the position has changed
+      // if (newPosition !== startingPosition) {
+      //   // if it has, update the position of all impacted statuses
+      //   if (newPosition > startingPosition) {
+      //     await prisma.status.updateMany({
+      //       where: {
+      //         AND: [
+      //           {
+      //             position: {
+      //               gt: startingPosition,
+      //             },
+      //           },
+      //           {
+      //             position: {
+      //               lte: newPosition,
+      //             },
+      //           },
+      //           {
+      //             NOT: {
+      //               id: status.id, // Exclude the updatedStatus
+      //             },
+      //           },
+      //         ],
+      //       },
+      //       data: {
+      //         position: {
+      //           decrement: 1,
+      //         },
+      //       },
+      //     });
+      //   } else if (newPosition < startingPosition) {
+      //     await prisma.status.updateMany({
+      //       where: {
+      //         AND: [
+      //           {
+      //             position: {
+      //               lt: startingPosition,
+      //             },
+      //           },
+      //           {
+      //             position: {
+      //               gte: newPosition,
+      //             },
+      //           },
+      //           {
+      //             NOT: {
+      //               id: status.id, // Exclude the updatedStatus
+      //             },
+      //           },
+      //         ],
+      //       },
+      //       data: {
+      //         position: {
+      //           increment: 1,
+      //         },
+      //       },
+      //     });
+      //   }
+      // }
 
       return updatedStatus;
     } catch (err) {
@@ -149,6 +149,27 @@ export default class StatusService {
     }
   };
 
+  static updateAll = async (
+    statuses: UpdateStatusDTO[]
+  ): Promise<Status[] | Prisma.PrismaClientKnownRequestError> => {
+    try {
+      const updatePromises = statuses.map((status) =>
+        prisma.status.update({
+          where: {
+            id: status.id,
+          },
+          data: {
+            position: status.position,
+          },
+        })
+      );
+      const updatedStatuses = await Promise.all(updatePromises);
+      return updatedStatuses;
+    } catch (err) {
+      console.error(err);
+      throw err as Prisma.PrismaClientKnownRequestError;
+    }
+  };
   static remove = async (
     id: number
   ): Promise<boolean | Error | Prisma.PrismaClientKnownRequestError> => {
