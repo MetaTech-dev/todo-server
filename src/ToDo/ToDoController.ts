@@ -97,6 +97,20 @@ export default class ToDoController extends BaseController {
     }
   };
 
+  updateAll = async (req: Request, res: Response) => {
+    const { body }: { body: UpdateToDoDTO[] } = req;
+    try {
+      if (Object.keys(body).length === 0) {
+        return this.badRequest(res, { message: "request body is required" });
+      }
+      const updatedToDos = await ToDoService.updateAll(body);
+
+      return this.created(res, updatedToDos);
+    } catch (err) {
+      return this.badRequest(res, err);
+    }
+  };
+
   remove = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
