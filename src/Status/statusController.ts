@@ -59,6 +59,30 @@ export default class StatusController extends BaseController {
     }
   };
 
+  updateAll = async (req: Request, res: Response) => {
+    const { body }: { body: UpdateStatusDTO[] } = req;
+
+    try {
+      if (Object.keys(body).length === 0) {
+        return this.badRequest(res, { message: "request body is required" });
+      } else if (!Array.isArray(body)) {
+        return this.badRequest(res, {
+          message: "request body must be an array",
+        });
+      } else if (body.length === 0) {
+        return this.badRequest(res, {
+          message: "request body must not be empty",
+        });
+      }
+
+      const updatedStatuses = await StatusService.updateAll(body);
+
+      return this.success(res, updatedStatuses);
+    } catch (e) {
+      return this.badRequest(res, e);
+    }
+  };
+
   remove = async (req: Request, res: Response) => {
     const { id } = req.params;
 

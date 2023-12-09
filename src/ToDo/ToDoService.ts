@@ -69,7 +69,36 @@ export default class ToDoService {
     }
   };
 
-  // TODO: handle errors for these
+  static updateAll = async (
+    toDos: UpdateToDoDTO[]
+  ): Promise<ToDo[] | Prisma.PrismaClientKnownRequestError> => {
+    try {
+      const updatedPromises = toDos.map((toDo) =>
+        prisma.toDo.update({
+          where: {
+            id: toDo.id,
+          },
+          data: toDo,
+        })
+      );
+      const updatedToDos = await Promise.all(updatedPromises);
+      return updatedToDos;
+    } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === "P2025"
+      ) {
+        throw new Error("ToDo not found, can not update");
+      } else if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === "P2003"
+      ) {
+        throw new Error("Status not found, please try again");
+      }
+      console.error(err);
+      throw err as Prisma.PrismaClientKnownRequestError;
+    }
+  };
 
   static remove = async (
     id: number
