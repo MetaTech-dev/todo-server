@@ -23,6 +23,7 @@
   "dependencies": {
     "@prisma/client": "^5.1.1",
     "cors": "^2.8.5",
+    "express-oauth2-jwt-bearer": "^1.6.0",
     "morgan": "^1.10.0",
     "typescript": "^5.1.6"
   },
