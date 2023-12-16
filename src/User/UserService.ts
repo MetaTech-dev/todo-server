@@ -20,6 +20,10 @@ export default class UserService {
         // get roles for user
         const rolesResponse = await management.users.getRoles({ id });
 
+        if (!rolesResponse.data.length) {
+            this.assignRoles(id, ['member']);
+        }
+
         // add roles to user object
         const user = {
            ...userResponse.data,
