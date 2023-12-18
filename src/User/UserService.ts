@@ -20,6 +20,7 @@ export default class UserService {
         // get roles for user
         let rolesResponse = await management.users.getRoles({ id });
 
+        // if the user doesn't have any roles, assign the default role
         if (!rolesResponse.data.length) {
             await this.assignRoles(id, ['member']);
             rolesResponse = await management.users.getRoles({ id });
