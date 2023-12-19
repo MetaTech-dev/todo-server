@@ -10,11 +10,11 @@ const management = new ManagementClient({
 export default class UserService {
   // note: create is handled by Auth0 when the user signs up on the frontend so we don't need to create a user here
 
-  update = async (id: string, body: UserUpdate) => {
+  static update = async (id: string, body: UserUpdate) => {
     await management.users.update({ id }, body);
   };
 
-  getOne = async (id: string) => {
+  static getOne = async (id: string) => {
     // get user without roles
     const userResponse = await management.users.get({ id });
 
@@ -36,7 +36,7 @@ export default class UserService {
     return user;
   };
 
-  list = async () => {
+  static list = async () => {
     // get the list of users without roles
     const usersResponse = await management.users.getAll();
 
@@ -54,7 +54,7 @@ export default class UserService {
     return users;
   };
 
-  assignRoles = async (id: string, roles: string[]) => {
+  static assignRoles = async (id: string, roles: string[]) => {
     await management.users.assignRoles({ id }, { roles });
   };
 }
