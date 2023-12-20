@@ -11,6 +11,6 @@ const { update, getOne, list, assignRoles } = new UserController();
 router.get("/", list);
 router.get("/:id", getOne);
 router.put("/:id", update);
-router.put("/:id/assign-roles", assignRoles);
+router.put("/:id/role", assignRoles);
 
 export default router;

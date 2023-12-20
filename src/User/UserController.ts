@@ -29,8 +29,7 @@ export default class UserController extends BaseController {
 
   update = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { body } = req.body;
-
+    const body = req.body;
     try {
       if (Object.keys(body).length === 0) {
         return this.badRequest(res, { message: "request body is required" });
@@ -38,7 +37,9 @@ export default class UserController extends BaseController {
         return this.badRequest(res, { message: "ID is required" });
       }
 
-      const updatedUser = await UserService.update(id, { body });
+      await UserService.update(id, body);
+
+      const updatedUser = await UserService.getOne(id);
 
       return this.created(res, updatedUser);
     } catch (err) {

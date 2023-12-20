@@ -11,6 +11,8 @@ export default class UserService {
   // note: create is handled by Auth0 when the user signs up on the frontend so we don't need to create a user here
 
   static update = async (id: string, body: UserUpdate) => {
+    console.log("id", id);
+    console.log("body", body);
     await management.users.update({ id }, body);
   };
 
