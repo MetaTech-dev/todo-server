@@ -66,5 +66,15 @@ export default class UserService {
 
   static assignRoles = async (id: string, roles: string[]) => {
     await management.users.assignRoles({ id }, { roles });
+
+    const user = await this.getOne(id);
+    return user;
+  };
+
+  static removeRoles = async (id: string, roles: string[]) => {
+    await management.users.deleteRoles({ id }, { roles });
+
+    const user = await this.getOne(id);
+    return user;
   };
 }

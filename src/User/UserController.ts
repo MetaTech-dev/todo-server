@@ -65,4 +65,23 @@ export default class UserController extends BaseController {
       return this.badRequest(res, err);
     }
   };
+
+  removeRoles = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { roles } = req.body;
+
+    try {
+      if (!id) {
+        return this.badRequest(res, { message: "ID is required" });
+      } else if (!roles) {
+        return this.badRequest(res, { message: "Roles are required" });
+      }
+
+      const assignedUser = await UserService.removeRoles(id, roles);
+
+      return this.created(res, assignedUser);
+    } catch (err) {
+      return this.badRequest(res, err);
+    }
+  };
 }
