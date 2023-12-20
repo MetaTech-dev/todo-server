@@ -37,23 +37,17 @@ export default class UserService {
   };
 
   static list = async () => {
-    console.log("hello from userService");
     // get the list of users without roles
     try {
       const usersResponse = await management.users.getAll();
-      console.log("usersResponse", usersResponse);
-
-      console.log("fuck");
 
       // loop through users, get roles for each user, and add roles to user object
       const users = await Promise.all(
         usersResponse.data.map(async (user) => {
-          console.log("userService before management call");
-          console.log("user right here");
           const rolesResponse = await management.users.getRoles({
             id: user.user_id,
           });
-          console.log("userService after management call");
+
           return {
             ...user,
             roles: rolesResponse.data,
