@@ -4,8 +4,12 @@ import UserService from "./UserService";
 
 export default class UserController extends BaseController {
   list = async (_req: Request, res: Response) => {
+    console.log("hello from userController");
     try {
+      console.log("hi from the controller before the call to the service ");
+
       const users = await UserService.list();
+      console.log("hi from the controller after the call to the service ");
       return this.success(res, users);
     } catch (err) {
       return this.badRequest(res, err);

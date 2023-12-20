@@ -1,10 +1,10 @@
 import { ManagementClient, UserUpdate } from "auth0";
 
 const management = new ManagementClient({
-  domain: "https://metatech-todo-dev.us.auth0.com/api/v2/",
-  clientId: "mg6cH2lq8jIEpEzIqgdpP3G2pethhWJq",
+  domain: "metatech-todo-dev.us.auth0.com",
+  clientId: "87yrCCRUTtwjvJ8flg5ZhzzB4kI6JMva",
   clientSecret:
-    "sTyLLH7B-HwPnYwwJMlQk0yy-E25wnuJLlYUIuvxvLWfkT_Y_5N8HhR6OTBWF9r9",
+    "uVB35ukoTqdjP2gQvCIr24Td8jQbQYw3Hb2oTGzPMGqqcy23SnYmAxvgSrAIToqz",
 });
 
 export default class UserService {
@@ -37,21 +37,35 @@ export default class UserService {
   };
 
   static list = async () => {
+    console.log("hello from userService");
     // get the list of users without roles
-    const usersResponse = await management.users.getAll();
+    try {
+      const usersResponse = await management.users.getAll();
+      console.log("usersResponse", usersResponse);
 
-    // loop through users, get roles for each user, and add roles to user object
-    const users = await Promise.all(
-      usersResponse.data.map(async (user) => {
-        const rolesResponse = await management.users.getRoles({ id: user.id });
-        return {
-          ...user,
-          roles: rolesResponse.data,
-        };
-      })
-    );
+      console.log("fuck");
 
-    return users;
+      // loop through users, get roles for each user, and add roles to user object
+      const users = await Promise.all(
+        usersResponse.data.map(async (user) => {
+          console.log("userService before management call");
+          console.log("user right here");
+          const rolesResponse = await management.users.getRoles({
+            id: user.user_id,
+          });
+          console.log("userService after management call");
+          return {
+            ...user,
+            roles: rolesResponse.data,
+          };
+        })
+      );
+
+      return users;
+    } catch (err) {
+      console.error(err);
+      throw new Error("this is an error");
+    }
   };
 
   static assignRoles = async (id: string, roles: string[]) => {
