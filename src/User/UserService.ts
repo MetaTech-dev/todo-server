@@ -10,23 +10,21 @@ const management = new ManagementClient({
 export default class UserService {
   // note: create is handled by Auth0 when the user signs up on the frontend so we don't need to create a user here
 
-  static update = async (id: string, body: UserUpdate) => {
-    console.log("id", id);
-    console.log("body", body);
-    await management.users.update({ id }, body);
+  static update = async (userId: string, body: UserUpdate) => {
+    await management.users.update({ id: userId }, body);
   };
 
-  static getOne = async (id: string) => {
+  static getOne = async (userId: string) => {
     // get user without roles
-    const userResponse = await management.users.get({ id });
+    const userResponse = await management.users.get({ id: userId });
 
     // get roles for user
-    let rolesResponse = await management.users.getRoles({ id });
+    let rolesResponse = await management.users.getRoles({ id: userId });
 
     // if the user doesn't have any roles, assign the default role
     if (!rolesResponse.data.length) {
-      await this.updateRoles(id, ["member"]);
-      rolesResponse = await management.users.getRoles({ id });
+      await this.updateRoles(userId, ["member"]);
+      rolesResponse = await management.users.getRoles({ id: userId });
     }
 
     // add roles to user object
@@ -64,10 +62,10 @@ export default class UserService {
     }
   };
 
-  static updateRoles = async (id: string, roleIds: string[]) => {
+  static updateRoles = async (userId: string, roleIds: string[]) => {
     // get current roles for user
    const currentRoles = await management.users.getRoles({
-        id,
+        id: userId,
       });
 
     // if the role ids passed in are not included in the current role ids, then we will add them
@@ -79,13 +77,13 @@ export default class UserService {
     ).map(role => role.id);
 
     // add roles
-    await management.users.assignRoles({ id }, { roles: roleIdsToAdd });
+    await management.users.assignRoles({ id: userId }, { roles: roleIdsToAdd });
 
     // remove roles 
-    await management.users.deleteRoles({ id }, { roles: roleIdsToRemove });
+    await management.users.deleteRoles({ id: userId }, { roles: roleIdsToRemove });
 
     // get updated user
-    const updatedUser = await this.getOne(id);
+    const updatedUser = await this.getOne(userId);
 
     return updatedUser;
   }

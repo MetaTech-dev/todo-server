@@ -14,12 +14,12 @@ export default class UserController extends BaseController {
   };
 
   getOne = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { userId } = req.params;
     try {
-      if (!id) {
-        return this.badRequest(res, { message: "ID is required" });
+      if (!userId) {
+        return this.badRequest(res, { message: "userId is required" });
       }
-      const user = await UserService.getOne(id);
+      const user = await UserService.getOne(userId);
 
       return this.success(res, user);
     } catch (err) {
@@ -30,22 +30,22 @@ export default class UserController extends BaseController {
   
 
   update = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { userId } = req.params;
     const body = req.body;
-    const userId = req.auth?.payload.sub;
+    const auth0UserId = req.auth?.payload.sub;
     try {
       if (Object.keys(body).length === 0) {
         return this.badRequest(res, { message: "request body is required" });
-      } else if (!id) {
-        return this.badRequest(res, { message: "ID is required" });
+      } else if (!userId) {
+        return this.badRequest(res, { message: "userId is required" });
       } 
-      else if (id !== userId) {
+      else if (auth0UserId !== userId) {
         return this.unAuthorized(res, { message: "You can only update your own user" });
       }
 
-      await UserService.update(id, body);
+      await UserService.update(userId, body);
 
-      const updatedUser = await UserService.getOne(id);
+      const updatedUser = await UserService.getOne(userId);
 
       return this.created(res, updatedUser);
     } catch (err) {
@@ -54,17 +54,17 @@ export default class UserController extends BaseController {
   };
 
   updateRoles = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { userId } = req.params;
     const { roleIds } = req.body;
 
     try {
-      if (!id) {
-        return this.badRequest(res, { message: "ID is required" });
+      if (!userId) {
+        return this.badRequest(res, { message: "userId is required" });
       } else if (!roleIds) {
         return this.badRequest(res, { message: "Roles are required" });
       }
 
-      const assignedUser = await UserService.updateRoles(id, roleIds);
+      const assignedUser = await UserService.updateRoles(userId, roleIds);
 
       return this.created(res, assignedUser);
     } catch (err) {
