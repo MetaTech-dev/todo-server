@@ -1,11 +1,6 @@
 import { Request, Response } from "express";
 import BaseController from "../BaseController";
 import UserService from "./UserService";
-import { JWTPayload } from "express-oauth2-jwt-bearer";
-
-interface RequestWithUser extends Request {
-  user: JWTPayload;
-}
 
 export default class UserController extends BaseController {
   list = async (_req: Request, res: Response) => {
@@ -34,20 +29,17 @@ export default class UserController extends BaseController {
 
   
 
-  update = async (req: RequestWithUser, res: Response) => {
+  update = async (req: Request, res: Response) => {
     const { id } = req.params;
     const body = req.body;
-    
-    // TODO: make sure user_id is on req.user
-    console.log("req.user", req.user);
-    const { user_id } = req.user;
-
+    const userId = req.auth?.payload.sub;
     try {
       if (Object.keys(body).length === 0) {
         return this.badRequest(res, { message: "request body is required" });
       } else if (!id) {
         return this.badRequest(res, { message: "ID is required" });
-      } else if (id !== user_id) {
+      } 
+      else if (id !== userId) {
         return this.unAuthorized(res, { message: "You can only update your own user" });
       }
 
