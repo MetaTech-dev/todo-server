@@ -1,5 +1,5 @@
 import express from "express";
-import StatusController from "./statusController";
+import StatusController from "./StatusController";
 import checkAuth from "../middleware/checkAuth";
 import checkPermissions from "../middleware/checkPermissions";
 

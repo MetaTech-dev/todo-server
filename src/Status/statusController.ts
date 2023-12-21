@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import BaseController from "../BaseController";
 import { CreateStatusDTO, UpdateStatusDTO } from "./statusTypes";
-import StatusService from "./statusService";
+import StatusService from "./StatusService";
 
 export default class StatusController extends BaseController {
   list = async (_req: Request, res: Response) => {
