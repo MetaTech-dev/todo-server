@@ -55,7 +55,6 @@ export default class UserController extends BaseController {
   updateRoles = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const { roleIds } = req.body;
-
     try {
       if (!userId) {
         return this.badRequest(res, { message: "userId is required" });

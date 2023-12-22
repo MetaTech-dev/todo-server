@@ -64,27 +64,38 @@ export default class UserService {
 
   static updateRoles = async (userId: string, roleIds: string[]) => {
     // get current roles for user
-   const currentRoles = await management.users.getRoles({
-        id: userId,
-      });
+    const currentRoles = await management.users.getRoles({
+      id: userId,
+    });
 
     // if the role ids passed in are not included in the current role ids, then we will add them
-    const roleIdsToAdd = roleIds.filter((roleId) => !currentRoles.data.map(role => role.id).includes(roleId));
+    const roleIdsToAdd = roleIds.filter(
+      (roleId) => !currentRoles.data.map((role) => role.id).includes(roleId)
+    );
 
     // if the current role ids are not included in the role ids passed in, then we will remove them
-    const roleIdsToRemove = currentRoles.data.filter(
-      (role) => !roleIds.includes(role.name)
-    ).map(role => role.id);
+    const roleIdsToRemove = currentRoles.data
+      .filter((role) => !roleIds.includes(role.id))
+      .map((role) => role.id);
 
     // add roles
-    await management.users.assignRoles({ id: userId }, { roles: roleIdsToAdd });
-
-    // remove roles 
-    await management.users.deleteRoles({ id: userId }, { roles: roleIdsToRemove });
+    if (roleIdsToAdd.length > 0) {
+      await management.users.assignRoles(
+        { id: userId },
+        { roles: roleIdsToAdd }
+      );
+    }
+    // remove roles
+    if (roleIdsToRemove.length > 0) {
+      await management.users.deleteRoles(
+        { id: userId },
+        { roles: roleIdsToRemove }
+      );
+    }
 
     // get updated user
     const updatedUser = await this.getOne(userId);
 
     return updatedUser;
-  }
+  };
 }
