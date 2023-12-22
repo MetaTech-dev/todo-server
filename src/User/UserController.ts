@@ -37,8 +37,6 @@ export default class UserController extends BaseController {
       } else if (!userId) {
         return this.badRequest(res, { message: "userId is required" });
       } else if (auth0UserId !== userId) {
-        console.log("auth0UserId", auth0UserId);
-        console.log("userId", userId);
         return this.unAuthorized(res, {
           message: "You can only update your own user",
         });
