@@ -27,8 +27,6 @@ export default class UserController extends BaseController {
     }
   };
 
-  
-
   update = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const body = req.body;
@@ -38,9 +36,10 @@ export default class UserController extends BaseController {
         return this.badRequest(res, { message: "request body is required" });
       } else if (!userId) {
         return this.badRequest(res, { message: "userId is required" });
-      } 
-      else if (auth0UserId !== userId) {
-        return this.unAuthorized(res, { message: "You can only update your own user" });
+      } else if (auth0UserId !== userId) {
+        return this.unAuthorized(res, {
+          message: "You can only update your own user",
+        });
       }
 
       await UserService.update(userId, body);
@@ -56,7 +55,6 @@ export default class UserController extends BaseController {
   updateRoles = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const { roleIds } = req.body;
-
     try {
       if (!userId) {
         return this.badRequest(res, { message: "userId is required" });
@@ -70,5 +68,5 @@ export default class UserController extends BaseController {
     } catch (err) {
       return this.badRequest(res, err);
     }
-  }
+  };
 }
