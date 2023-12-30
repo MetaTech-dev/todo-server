@@ -1,4 +1,5 @@
 import { ManagementClient, UserUpdate } from "auth0";
+import RoleService from "../Role/RoleService";
 
 const management = new ManagementClient({
   domain: "metatech-todo-dev.us.auth0.com",
@@ -23,7 +24,10 @@ export default class UserService {
 
     // if the user doesn't have any roles, assign the default role
     if (!rolesResponse.data.length) {
-      await this.updateRoles(userId, ["member"]);
+      const roles = await RoleService.list();
+      const defaultRoleId =
+        roles.find((role) => role.name === "Member")?.id ?? "";
+      await this.updateRoles(userId, [defaultRoleId]);
       rolesResponse = await management.users.getRoles({ id: userId });
     }
 
