@@ -22,8 +22,8 @@ app.use(permissionErrorHandler);
 
 if (process.env.USE_HTTPS === "true") {
   const httpsServer = https.createServer({
-    key: fs.readFileSync('~/.cert/key.pem'),
-    cert: fs.readFileSync('~/.cert/cert.pem'),
+    key: fs.readFileSync('/etc/.cert/key.pem'),
+    cert: fs.readFileSync('/etc/.cert/cert.pem'),
   }, app);
 
   httpsServer.listen(443, () => {
