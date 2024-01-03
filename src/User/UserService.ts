@@ -89,6 +89,7 @@ export default class UserService {
         { roles: roleIdsToAdd }
       );
     }
+    
     // remove roles
     if (roleIdsToRemove.length > 0) {
       await management.users.deleteRoles(
