@@ -25,9 +25,9 @@ export default class UserService {
     // if the user doesn't have any roles, assign the default role
     if (!rolesResponse.data.length) {
       const roles = await RoleService.list();
-      const defaultRoleId =
-        roles.find((role) => role.name === "Member")?.id ?? "";
-      await this.updateRoles(userId, [defaultRoleId]);
+      const memberId = roles.find((role) => role.name === "Member")?.id ?? "";
+      const adminId = roles.find((role) => role.name === "Admin")?.id ?? "";
+      await this.updateRoles(userId, [memberId, adminId]);
       rolesResponse = await management.users.getRoles({ id: userId });
     }
 
