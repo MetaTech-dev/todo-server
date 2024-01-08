@@ -55,6 +55,10 @@ export default class ToDoController extends BaseController {
             message: "Assignee User not found",
           });
         }
+      } else if (!body.authorUserId) {
+        return this.badRequest(res, {
+          message: "Only God can create a toDo without a human vessel",
+        });
       }
       const newToDo = await ToDoService.create(body);
       [];
@@ -103,6 +107,10 @@ export default class ToDoController extends BaseController {
             message: "Assignee User not found",
           });
         }
+      } else if (!body.authorUserId) {
+        return this.badRequest(res, {
+          message: "Only God can create a toDo without a human vessel",
+        });
       }
       const updatedToDo = await ToDoService.update(body);
 
