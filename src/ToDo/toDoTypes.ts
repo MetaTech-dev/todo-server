@@ -5,6 +5,8 @@ export interface CreateToDoDTO {
   dueDate?: string | Date;
   priority: string;
   statusId: number;
+  authorUserId: string;
+  assigneeUserId?: string;
 }
 
 export interface UpdateToDoDTO {
@@ -14,5 +16,7 @@ export interface UpdateToDoDTO {
   dueDate?: string | Date;
   priority?: string;
   statusId?: number;
+  authorUserId: string;
+  assigneeUserId?: string;
   id: number;
 }

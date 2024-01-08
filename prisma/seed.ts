@@ -9,15 +9,6 @@ const seed = async () => {
     create: {
       title: "Ready",
       position: 1,
-      toDos: {
-        create: [
-          {
-            title: "Welcome to toDo!",
-            description: "Create your first toDo to get started",
-            priority: "low",
-          },
-        ],
-      },
     },
   });
 
