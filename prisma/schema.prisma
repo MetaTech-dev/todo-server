@@ -12,7 +12,7 @@ datasource db {
 
 model ToDo {
   title           String
-  description     String
+  description     String      @db.Text
   createdDate     DateTime    @default(now())
   dueDate         DateTime?
   priority        String
