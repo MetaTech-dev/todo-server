@@ -29,6 +29,10 @@ export default class ToDoController extends BaseController {
         return this.badRequest(res, {
           message: "Description must be a string",
         });
+      } else if (body.description && body.description.length > 65535) {
+        return this.badRequest(res, {
+          message: "Description must be less than 65535 characters",
+        });
       } else if (body.createdDate && typeof body.createdDate !== "string") {
         return this.badRequest(res, {
           message: "Created Date must be a string",
@@ -80,6 +84,10 @@ export default class ToDoController extends BaseController {
       } else if (body.description && typeof body.description !== "string") {
         return this.badRequest(res, {
           message: "Description must be a string",
+        });
+      } else if (body.description && body.description.length > 65535) {
+        return this.badRequest(res, {
+          message: "Description must be less than 65535 characters",
         });
       } else if (body.createdDate && typeof body.createdDate !== "string") {
         return this.badRequest(res, {
