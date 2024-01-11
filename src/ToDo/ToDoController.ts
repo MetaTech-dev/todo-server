@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import BaseController from "../BaseController";
 import { CreateToDoDTO, UpdateToDoDTO } from "./toDoTypes";
 import ToDoService from "./ToDoService";
+import UserService from "../User/UserService";
 
 export default class ToDoController extends BaseController {
   list = async (_req: Request, res: Response) => {
@@ -28,6 +29,10 @@ export default class ToDoController extends BaseController {
         return this.badRequest(res, {
           message: "Description must be a string",
         });
+      } else if (body.description && body.description.length > 65535) {
+        return this.badRequest(res, {
+          message: "Description must be less than 65535 characters",
+        });
       } else if (body.createdDate && typeof body.createdDate !== "string") {
         return this.badRequest(res, {
           message: "Created Date must be a string",
@@ -47,6 +52,17 @@ export default class ToDoController extends BaseController {
         return this.badRequest(res, { message: "Status ID is required" });
       } else if (typeof body.statusId !== "number") {
         return this.badRequest(res, { message: "Status ID must be a number" });
+      } else if (body.assigneeUserId) {
+        const assigneeUser = await UserService.getOne(body.assigneeUserId);
+        if (!assigneeUser) {
+          return this.notFound(res, {
+            message: "Assignee User not found",
+          });
+        }
+      } else if (!body.authorUserId) {
+        return this.badRequest(res, {
+          message: "Only God can create a toDo without a human vessel",
+        });
       }
       const newToDo = await ToDoService.create(body);
       [];
@@ -69,6 +85,10 @@ export default class ToDoController extends BaseController {
         return this.badRequest(res, {
           message: "Description must be a string",
         });
+      } else if (body.description && body.description.length > 65535) {
+        return this.badRequest(res, {
+          message: "Description must be less than 65535 characters",
+        });
       } else if (body.createdDate && typeof body.createdDate !== "string") {
         return this.badRequest(res, {
           message: "Created Date must be a string",
@@ -88,6 +108,17 @@ export default class ToDoController extends BaseController {
         return this.badRequest(res, { message: "ID is required" });
       } else if (id && isNaN(Number(id))) {
         return this.badRequest(res, { message: "ID must be a number" });
+      } else if (body.assigneeUserId) {
+        const assigneeUser = await UserService.getOne(body.assigneeUserId);
+        if (!assigneeUser) {
+          return this.notFound(res, {
+            message: "Assignee User not found",
+          });
+        }
+      } else if (!body.authorUserId) {
+        return this.badRequest(res, {
+          message: "Only God can create a toDo without a human vessel",
+        });
       }
       const updatedToDo = await ToDoService.update(body);
 

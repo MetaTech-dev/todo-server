@@ -7,7 +7,7 @@
     "build": "npx tsc",
     "execute": "node dist/src/index.js",
     "clean": "rm -rf dist",
-    "start": "npm run clean && npm run build && npm run execute"
+    "start": "npm run clean && npm run build && npx prisma migrate deploy && npm run execute"
   },
   "repository": {
     "type": "git",
