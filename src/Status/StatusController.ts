@@ -2,9 +2,10 @@ import { Request, Response } from "express";
 import BaseController from "../BaseController";
 import { CreateStatusDTO, UpdateStatusDTO } from "./statusTypes";
 import StatusService from "./StatusService";
+import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 
 export default class StatusController extends BaseController {
-  list = async (_req: Request, res: Response) => {
+  list = async (_req: RequireAuthProp<Request>, res: Response) => {
     try {
       const statuses = await StatusService.list();
 
@@ -14,7 +15,7 @@ export default class StatusController extends BaseController {
     }
   };
 
-  create = async (req: Request, res: Response) => {
+  create = async (req: RequireAuthProp<Request>, res: Response) => {
     const { body }: { body: CreateStatusDTO } = req;
     try {
       if (Object.keys(body).length === 0) {
@@ -32,7 +33,7 @@ export default class StatusController extends BaseController {
     }
   };
 
-  update = async (req: Request, res: Response) => {
+  update = async (req: RequireAuthProp<Request>, res: Response) => {
     const { body }: { body: UpdateStatusDTO } = req;
     const { id } = req.params;
 
@@ -59,7 +60,7 @@ export default class StatusController extends BaseController {
     }
   };
 
-  updateAll = async (req: Request, res: Response) => {
+  updateAll = async (req: RequireAuthProp<Request>, res: Response) => {
     const { body }: { body: UpdateStatusDTO[] } = req;
 
     try {
@@ -83,7 +84,7 @@ export default class StatusController extends BaseController {
     }
   };
 
-  remove = async (req: Request, res: Response) => {
+  remove = async (req: RequireAuthProp<Request>, res: Response) => {
     const { id } = req.params;
 
     try {
@@ -98,7 +99,7 @@ export default class StatusController extends BaseController {
     }
   };
 
-  getOne = async (req: Request, res: Response) => {
+  getOne = async (req: RequireAuthProp<Request>, res: Response) => {
     const { id } = req.params;
     try {
       if (!id) {

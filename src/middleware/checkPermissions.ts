@@ -1,22 +1,22 @@
+import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 import { Request, Response, NextFunction } from "express";
-import { claimCheck, InsufficientScopeError } from "express-oauth2-jwt-bearer";
 
 const checkPermissions = (requiredPermissions: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const permissionCheck = claimCheck((payload) => {
-      const permissions = payload.permissions as string[];
+  return async (
+    req: RequireAuthProp<Request>,
+    _res: Response,
+    next: NextFunction
+  ) => {
+    const hasPermissions = requiredPermissions.every((requiredPermission) =>
+      // TODO: Fix this, waiting on clerk support
+      // @ts-ignore
+      req.auth.orgPermissions.includes(`org:${requiredPermission}`)
+    );
+    if (!hasPermissions) {
+      throw new Error("You do not have permission to perform this action");
+    }
 
-      const hasPermissions = requiredPermissions.every((requiredPermission) =>
-        permissions.includes(requiredPermission)
-      );
-
-      if (!hasPermissions) {
-        throw new InsufficientScopeError();
-      }
-
-      return hasPermissions;
-    });
-    permissionCheck(req, res, next);
+    next();
   };
 };
 

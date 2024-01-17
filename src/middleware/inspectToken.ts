@@ -1,7 +1,8 @@
+import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 import { NextFunction, Request, Response } from "express";
 
 export const inspectToken = (
-  req: Request,
+  req: RequireAuthProp<Request>,
   _res: Response,
   next: NextFunction
 ) => {

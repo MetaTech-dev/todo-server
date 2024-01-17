@@ -1,105 +1,66 @@
-import { ManagementClient, UserUpdate } from "auth0";
-import RoleService from "../Role/RoleService";
-
-const management = new ManagementClient({
-  domain: "metatech-todo-dev.us.auth0.com",
-  clientId: "87yrCCRUTtwjvJ8flg5ZhzzB4kI6JMva",
-  clientSecret:
-    "uVB35ukoTqdjP2gQvCIr24Td8jQbQYw3Hb2oTGzPMGqqcy23SnYmAxvgSrAIToqz",
-});
+import clerkClient from "@clerk/clerk-sdk-node";
 
 export default class UserService {
   // note: create is handled by Auth0 when the user signs up on the frontend so we don't need to create a user here
 
-  static update = async (userId: string, body: UserUpdate) => {
-    await management.users.update({ id: userId }, body);
-  };
+  static update = async (userId: string, body: object) =>
+    clerkClient.users.updateUser(userId, body);
 
   static getOne = async (userId: string) => {
-    // get user without roles
-    const userResponse = await management.users.get({ id: userId });
-
-    // get roles for user
-    let rolesResponse = await management.users.getRoles({ id: userId });
-
-    // if the user doesn't have any roles, assign the default role
-    if (!rolesResponse.data.length) {
-      const roles = await RoleService.list();
-      const memberId = roles.find((role) => role.name === "Member")?.id ?? "";
-      const adminId = roles.find((role) => role.name === "Admin")?.id ?? "";
-      await this.updateRoles(userId, [memberId, adminId]);
-      rolesResponse = await management.users.getRoles({ id: userId });
-    }
-
-    // add roles to user object
-    const user = {
-      ...userResponse.data,
-      roles: rolesResponse.data,
+    const user = await clerkClient.users.getUser(userId);
+    // TODO: make this more efficient when clerk makes it easier
+    const organizationMembershipList =
+      await clerkClient.organizations.getOrganizationMembershipList({
+        organizationId: process.env.CLERK_ORGANIZATION_ID as string,
+      });
+    const organizationMembership = organizationMembershipList.find(
+      (organizationMembership) =>
+        organizationMembership.publicUserData?.userId === userId
+    );
+    const userWithRole = {
+      ...user,
+      role: organizationMembership?.role,
     };
 
-    return user;
+    return userWithRole;
   };
 
   static list = async () => {
     // get the list of users without roles
     try {
-      const usersResponse = await management.users.getAll();
+      const users = await clerkClient.users.getUserList();
+      // TODO: make this more efficient when clerk makes it easier
+      const organizationMembershipList =
+        await clerkClient.organizations.getOrganizationMembershipList({
+          organizationId: process.env.CLERK_ORGANIZATION_ID as string,
+        });
 
-      // loop through users, get roles for each user, and add roles to user object
-      const users = await Promise.all(
-        usersResponse.data.map(async (user) => {
-          const rolesResponse = await management.users.getRoles({
-            id: user.user_id,
-          });
+      const usersWithRole = users.map((user) => {
+        const organizationMembership = organizationMembershipList.find(
+          (organizationMembership) =>
+            organizationMembership.publicUserData?.userId === user.id
+        );
+        return {
+          ...user,
+          role: organizationMembership?.role,
+        };
+      });
 
-          return {
-            ...user,
-            roles: rolesResponse.data,
-          };
-        })
-      );
-
-      return users;
+      return usersWithRole;
     } catch (err) {
       console.error(err);
       throw new Error("this is an error");
     }
   };
 
-  static updateRoles = async (userId: string, roleIds: string[]) => {
-    // get current roles for user
-    const currentRoles = await management.users.getRoles({
-      id: userId,
+  static updateRole = async (userId: string, role: string) => {
+    await clerkClient.organizations.updateOrganizationMembership({
+      organizationId: process.env.CLERK_ORGANIZATION_ID as string,
+      userId,
+      role,
     });
 
-    // if the role ids passed in are not included in the current role ids, then we will add them
-    const roleIdsToAdd = roleIds.filter(
-      (roleId) => !currentRoles.data.map((role) => role.id).includes(roleId)
-    );
-
-    // if the current role ids are not included in the role ids passed in, then we will remove them
-    const roleIdsToRemove = currentRoles.data
-      .filter((role) => !roleIds.includes(role.id))
-      .map((role) => role.id);
-
-    // add roles
-    if (roleIdsToAdd.length > 0) {
-      await management.users.assignRoles(
-        { id: userId },
-        { roles: roleIdsToAdd }
-      );
-    }
-    
-    // remove roles
-    if (roleIdsToRemove.length > 0) {
-      await management.users.deleteRoles(
-        { id: userId },
-        { roles: roleIdsToRemove }
-      );
-    }
-
-    // get updated user
-    const updatedUser = await this.getOne(userId);
+    const updatedUser = await clerkClient.users.getUser(userId);
 
     return updatedUser;
   };

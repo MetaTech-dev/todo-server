@@ -2,10 +2,10 @@ import { Request, Response } from "express";
 import BaseController from "../BaseController";
 import { CreateToDoDTO, UpdateToDoDTO } from "./toDoTypes";
 import ToDoService from "./ToDoService";
-import UserService from "../User/UserService";
+import clerkClient, { RequireAuthProp } from "@clerk/clerk-sdk-node";
 
 export default class ToDoController extends BaseController {
-  list = async (_req: Request, res: Response) => {
+  list = async (_req: RequireAuthProp<Request>, res: Response) => {
     try {
       const toDos = await ToDoService.list();
       return this.success(res, toDos);
@@ -14,7 +14,7 @@ export default class ToDoController extends BaseController {
     }
   };
 
-  create = async (req: Request, res: Response) => {
+  create = async (req: RequireAuthProp<Request>, res: Response) => {
     const { body }: { body: CreateToDoDTO } = req;
     try {
       if (Object.keys(body).length === 0) {
@@ -53,7 +53,9 @@ export default class ToDoController extends BaseController {
       } else if (typeof body.statusId !== "number") {
         return this.badRequest(res, { message: "Status ID must be a number" });
       } else if (body.assigneeUserId) {
-        const assigneeUser = await UserService.getOne(body.assigneeUserId);
+        const assigneeUser = await clerkClient.users.getUser(
+          body.assigneeUserId
+        );
         if (!assigneeUser) {
           return this.notFound(res, {
             message: "Assignee User not found",
@@ -73,7 +75,7 @@ export default class ToDoController extends BaseController {
     }
   };
 
-  update = async (req: Request, res: Response) => {
+  update = async (req: RequireAuthProp<Request>, res: Response) => {
     const { body }: { body: UpdateToDoDTO } = req;
     const { id } = req.params;
     try {
@@ -109,7 +111,9 @@ export default class ToDoController extends BaseController {
       } else if (id && isNaN(Number(id))) {
         return this.badRequest(res, { message: "ID must be a number" });
       } else if (body.assigneeUserId) {
-        const assigneeUser = await UserService.getOne(body.assigneeUserId);
+        const assigneeUser = await await clerkClient.users.getUser(
+          body.assigneeUserId
+        );
         if (!assigneeUser) {
           return this.notFound(res, {
             message: "Assignee User not found",
@@ -128,7 +132,7 @@ export default class ToDoController extends BaseController {
     }
   };
 
-  updateAll = async (req: Request, res: Response) => {
+  updateAll = async (req: RequireAuthProp<Request>, res: Response) => {
     const { body }: { body: UpdateToDoDTO[] } = req;
     try {
       if (Object.keys(body).length === 0) {
@@ -142,7 +146,7 @@ export default class ToDoController extends BaseController {
     }
   };
 
-  remove = async (req: Request, res: Response) => {
+  remove = async (req: RequireAuthProp<Request>, res: Response) => {
     const { id } = req.params;
     try {
       if (isNaN(Number(id))) {
@@ -156,7 +160,7 @@ export default class ToDoController extends BaseController {
     }
   };
 
-  getOne = async (req: Request, res: Response) => {
+  getOne = async (req: RequireAuthProp<Request>, res: Response) => {
     const { id } = req.params;
     try {
       if (!id) {
