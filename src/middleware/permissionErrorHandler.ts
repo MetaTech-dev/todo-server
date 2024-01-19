@@ -9,5 +9,5 @@ export const permissionErrorHandler = (
 ) => {
   console.error("permissionErrorHandler error", error);
   response.json({ error: error.message });
-  next;
+  next();
 };
