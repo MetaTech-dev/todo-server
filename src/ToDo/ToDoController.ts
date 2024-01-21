@@ -5,9 +5,11 @@ import ToDoService from "./ToDoService";
 import clerkClient, { RequireAuthProp } from "@clerk/clerk-sdk-node";
 
 export default class ToDoController extends BaseController {
-  list = async (_req: RequireAuthProp<Request>, res: Response) => {
+  list = async (req: RequireAuthProp<Request>, res: Response) => {
+    const orgId = req.query.orgId?.toString();
+    const { userId } = req.auth;
     try {
-      const toDos = await ToDoService.list();
+      const toDos = await ToDoService.list({ orgId, userId });
       return this.success(res, toDos);
     } catch (err) {
       return this.badRequest(res, err);
@@ -16,6 +18,9 @@ export default class ToDoController extends BaseController {
 
   create = async (req: RequireAuthProp<Request>, res: Response) => {
     const { body }: { body: CreateToDoDTO } = req;
+    const { userId } = req.auth;
+    const orgId = req.query.orgId?.toString();
+
     try {
       if (Object.keys(body).length === 0) {
         return this.badRequest(res, { message: "request body is required" });
@@ -66,6 +71,13 @@ export default class ToDoController extends BaseController {
           message: "Only God can create a toDo without a human vessel",
         });
       }
+
+      if (orgId) {
+        body.orgId = orgId;
+      } else {
+        body.orgId = userId;
+      }
+
       const newToDo = await ToDoService.create(body);
       [];
 

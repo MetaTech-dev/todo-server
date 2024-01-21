@@ -2,35 +2,22 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const seed = async () => {
-  const ready = await prisma.status.upsert({
-    where: { title: "Ready" },
-    update: {},
-    create: {
-      title: "Ready",
-      position: 1,
-    },
-  });
+export const defaultStatuses = [
+  {
+    title: "To Do",
+    position: 1,
+  },
+  {
+    title: "In Progress",
+    position: 2,
+  },
+  {
+    title: "Done",
+    position: 3,
+  },
+];
 
-  const inProgress = await prisma.status.upsert({
-    where: { title: "In Progress" },
-    update: {},
-    create: {
-      title: "In Progress",
-      position: 2,
-    },
-  });
-
-  const done = await prisma.status.upsert({
-    where: { title: "Done" },
-    update: {},
-    create: {
-      title: "Done",
-      position: 3,
-    },
-  });
-  console.log(ready, inProgress, done);
-};
+const seed = async () => {};
 
 seed()
   .then(async () => {

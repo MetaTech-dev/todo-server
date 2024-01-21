@@ -1,9 +1,9 @@
 import clerkClient from "@clerk/clerk-sdk-node";
 
 export default class RoleService {
-  static list = async () => {
+  static list = async ({ orgId }: { orgId: string }) => {
     const organization = await clerkClient.organizations.getOrganization({
-      organizationId: process.env.CLERK_ORGANIZATION_ID as string,
+      organizationId: orgId,
     });
     console.log("organization", organization);
 

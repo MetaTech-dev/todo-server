@@ -4,9 +4,13 @@ import RoleService from "./RoleService";
 import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 
 export default class RoleController extends BaseController {
-  list = async (_req: RequireAuthProp<Request>, res: Response) => {
+  list = async (req: RequireAuthProp<Request>, res: Response) => {
+    const orgId = req.query.orgId?.toString();
+    if (!orgId) {
+      return this.badRequest(res, { message: "orgId is required" });
+    }
     try {
-      const roles = await RoleService.list();
+      const roles = await RoleService.list({ orgId });
       return this.success(res, roles);
     } catch (err) {
       return this.badRequest(res, err);

@@ -2,7 +2,7 @@ import express, { Application, Request, Response } from "express";
 import router from "./router";
 import morgan from "morgan";
 import cors from "cors";
-import { permissionErrorHandler } from "./middleware/permissionErrorHandler";
+import { errorHandler } from "./middleware/errorHandler";
 import https from "https";
 import fs from "fs";
 import { RequireAuthProp, StrictAuthProp } from "@clerk/clerk-sdk-node";
@@ -20,13 +20,14 @@ const port = 3000;
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
+app.disable("etag");
 
 app.get("/", (_req: RequireAuthProp<Request>, res: Response) => {
   res.send("Hello World!");
 });
 
 app.use(router);
-app.use(permissionErrorHandler);
+app.use(errorHandler);
 
 if (process.env.USE_HTTPS === "true") {
   const httpsServer = https.createServer(

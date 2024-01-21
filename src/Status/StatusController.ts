@@ -5,9 +5,11 @@ import StatusService from "./StatusService";
 import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 
 export default class StatusController extends BaseController {
-  list = async (_req: RequireAuthProp<Request>, res: Response) => {
+  list = async (req: RequireAuthProp<Request>, res: Response) => {
+    const orgId = req.query.orgId?.toString();
+    const { userId } = req.auth;
     try {
-      const statuses = await StatusService.list();
+      const statuses = await StatusService.list({ orgId, userId });
 
       return this.success(res, statuses);
     } catch (e) {
@@ -17,6 +19,8 @@ export default class StatusController extends BaseController {
 
   create = async (req: RequireAuthProp<Request>, res: Response) => {
     const { body }: { body: CreateStatusDTO } = req;
+    const orgId = req.query.orgId?.toString();
+    const { userId } = req.auth;
     try {
       if (Object.keys(body).length === 0) {
         return this.badRequest(res, { message: "request body is required" });
@@ -25,6 +29,13 @@ export default class StatusController extends BaseController {
       } else if (typeof body.title !== "string") {
         return this.badRequest(res, { message: "Title must be a string" });
       }
+
+      if (orgId) {
+        body.orgId = orgId;
+      } else {
+        body.orgId = userId;
+      }
+
       const newStatus = await StatusService.create(body);
 
       return this.created(res, newStatus);

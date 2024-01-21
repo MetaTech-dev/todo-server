@@ -7,6 +7,7 @@ export interface CreateToDoDTO {
   statusId: number;
   authorUserId: string;
   assigneeUserId?: string;
+  orgId: string;
 }
 
 export interface UpdateToDoDTO {

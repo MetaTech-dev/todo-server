@@ -1,38 +1,46 @@
 import clerkClient from "@clerk/clerk-sdk-node";
 
 export default class UserService {
-  // note: create is handled by Auth0 when the user signs up on the frontend so we don't need to create a user here
-
-  static update = async (userId: string, body: object) =>
+  static update = async ({ userId, body }: { userId: string; body: object }) =>
     clerkClient.users.updateUser(userId, body);
 
-  static getOne = async (userId: string) => {
+  static getOne = async ({
+    userId,
+    orgId,
+  }: {
+    userId: string;
+    orgId?: string;
+  }) => {
     const user = await clerkClient.users.getUser(userId);
-    // TODO: make this more efficient when clerk makes it easier
-    const organizationMembershipList =
-      await clerkClient.organizations.getOrganizationMembershipList({
-        organizationId: process.env.CLERK_ORGANIZATION_ID as string,
-      });
-    const organizationMembership = organizationMembershipList.find(
-      (organizationMembership) =>
-        organizationMembership.publicUserData?.userId === userId
-    );
-    const userWithRole = {
-      ...user,
-      role: organizationMembership?.role,
-    };
 
-    return userWithRole;
-  };
-
-  static list = async () => {
-    // get the list of users without roles
-    try {
-      const users = await clerkClient.users.getUserList();
+    if (orgId) {
       // TODO: make this more efficient when clerk makes it easier
       const organizationMembershipList =
         await clerkClient.organizations.getOrganizationMembershipList({
-          organizationId: process.env.CLERK_ORGANIZATION_ID as string,
+          organizationId: orgId,
+        });
+      const organizationMembership = organizationMembershipList.find(
+        (organizationMembership) =>
+          organizationMembership.publicUserData?.userId === userId
+      );
+
+      return {
+        ...user,
+        role: organizationMembership?.role,
+      };
+    } else {
+      return user;
+    }
+  };
+
+  static list = async ({ orgId }: { orgId: string }) => {
+    // get the list of users without roles
+    const users = await clerkClient.users.getUserList();
+    if (orgId) {
+      // TODO: make this more efficient when clerk makes it easier
+      const organizationMembershipList =
+        await clerkClient.organizations.getOrganizationMembershipList({
+          organizationId: orgId,
         });
 
       const usersWithRole = users.map((user) => {
@@ -47,20 +55,27 @@ export default class UserService {
       });
 
       return usersWithRole;
-    } catch (err) {
-      console.error(err);
-      throw new Error("this is an error");
+    } else {
+      return users;
     }
   };
 
-  static updateRole = async (userId: string, role: string) => {
+  static updateRole = async ({
+    userId,
+    role,
+    orgId,
+  }: {
+    userId: string;
+    role: string;
+    orgId: string;
+  }) => {
     await clerkClient.organizations.updateOrganizationMembership({
-      organizationId: process.env.CLERK_ORGANIZATION_ID as string,
+      organizationId: orgId,
       userId,
       role,
     });
 
-    const updatedUser = await clerkClient.users.getUser(userId);
+    const updatedUser = await this.getOne({ userId, orgId });
 
     return updatedUser;
   };

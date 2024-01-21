@@ -4,9 +4,13 @@ import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 import UserService from "./UserService";
 
 export default class UserController extends BaseController {
-  list = async (_req: RequireAuthProp<Request>, res: Response) => {
+  list = async (req: RequireAuthProp<Request>, res: Response) => {
+    const orgId = req.query.orgId?.toString();
+    if (!orgId) {
+      return this.badRequest(res, { message: "orgId is required" });
+    }
     try {
-      const users = await UserService.list();
+      const users = await UserService.list({ orgId });
 
       return this.success(res, users);
     } catch (err) {
@@ -16,12 +20,13 @@ export default class UserController extends BaseController {
 
   getOne = async (req: RequireAuthProp<Request>, res: Response) => {
     const { userId } = req.params;
+    const orgId = req.query.orgId?.toString();
     try {
       if (!userId) {
         return this.badRequest(res, { message: "userId is required" });
       }
 
-      const user = await UserService.getOne(userId);
+      const user = await UserService.getOne({ userId, orgId });
 
       return this.success(res, user);
     } catch (err) {
@@ -45,7 +50,7 @@ export default class UserController extends BaseController {
         });
       }
 
-      const updatedUser = await UserService.update(userId, body);
+      const updatedUser = await UserService.update({ userId, body });
 
       return this.created(res, updatedUser);
     } catch (err) {
@@ -55,15 +60,18 @@ export default class UserController extends BaseController {
 
   updateRole = async (req: RequireAuthProp<Request>, res: Response) => {
     const { userId } = req.params;
+    const orgId = req.query.orgId?.toString();
     const { role } = req.body;
     try {
       if (!userId) {
         return this.badRequest(res, { message: "userId is required" });
       } else if (!role) {
         return this.badRequest(res, { message: "role is required" });
+      } else if (!orgId) {
+        return this.badRequest(res, { message: "orgId is required" });
       }
 
-      const updatedUser = UserService.updateRole(userId, role);
+      const updatedUser = UserService.updateRole({ userId, role, orgId });
 
       return this.created(res, updatedUser);
     } catch (err) {

@@ -7,15 +7,17 @@ const checkPermissions = (requiredPermissions: string[]) => {
     _res: Response,
     next: NextFunction
   ) => {
-    const hasPermissions = requiredPermissions.every((requiredPermission) =>
-      // TODO: Fix this, waiting on clerk support
-      // @ts-ignore
-      req.auth.orgPermissions?.includes(`org:${requiredPermission}`)
-    );
-    if (!hasPermissions) {
-      throw new Error("You do not have permission to perform this action");
+    const orgId = req.query.orgId?.toString();
+    if (orgId) {
+      const hasPermissions = requiredPermissions.every((requiredPermission) =>
+        // TODO: Fix this, waiting on clerk support
+        // @ts-ignore
+        req.auth.orgPermissions?.includes(`org:${requiredPermission}`)
+      );
+      if (!hasPermissions) {
+        return next(new Error("Unauthorized"));
+      }
     }
-
     next();
   };
 };

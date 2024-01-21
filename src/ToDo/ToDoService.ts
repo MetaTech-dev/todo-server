@@ -3,11 +3,18 @@ import { Prisma, ToDo } from "@prisma/client";
 import { CreateToDoDTO, UpdateToDoDTO } from "./toDoTypes";
 
 export default class ToDoService {
-  static list = async (): Promise<
-    ToDo[] | Prisma.PrismaClientKnownRequestError
-  > => {
+  static list = async ({
+    orgId,
+    userId,
+  }: {
+    orgId?: string;
+    userId?: string;
+  }): Promise<ToDo[] | Prisma.PrismaClientKnownRequestError> => {
     try {
       const allToDos = await prisma.toDo.findMany({
+        where: {
+          orgId: orgId ? orgId : userId,
+        },
         orderBy: {
           createdDate: "desc",
         },
