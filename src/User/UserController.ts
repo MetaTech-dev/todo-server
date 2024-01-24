@@ -5,7 +5,9 @@ import UserService from "./UserService";
 
 export default class UserController extends BaseController {
   list = async (req: RequireAuthProp<Request>, res: Response) => {
-    const orgId = req.query.orgId?.toString();
+    // TODO: Fix this, waiting on clerk support
+    // @ts-ignore
+    const { orgId } = req.auth;
     if (!orgId) {
       return this.badRequest(res, { message: "orgId is required" });
     }
@@ -20,7 +22,9 @@ export default class UserController extends BaseController {
 
   getOne = async (req: RequireAuthProp<Request>, res: Response) => {
     const { userId } = req.params;
-    const orgId = req.query.orgId?.toString();
+    // TODO: Fix this, waiting on clerk support
+    // @ts-ignore
+    const { orgId } = req.auth;
     try {
       if (!userId) {
         return this.badRequest(res, { message: "userId is required" });
@@ -60,7 +64,9 @@ export default class UserController extends BaseController {
 
   updateRole = async (req: RequireAuthProp<Request>, res: Response) => {
     const { userId } = req.params;
-    const orgId = req.query.orgId?.toString();
+    // TODO: Fix this, waiting on clerk support
+    // @ts-ignore
+    const { orgId } = req.auth;
     const { role } = req.body;
     try {
       if (!userId) {

@@ -6,8 +6,9 @@ import clerkClient, { RequireAuthProp } from "@clerk/clerk-sdk-node";
 
 export default class ToDoController extends BaseController {
   list = async (req: RequireAuthProp<Request>, res: Response) => {
-    const orgId = req.query.orgId?.toString();
-    const { userId } = req.auth;
+    // TODO: Fix this, waiting on clerk support
+    // @ts-ignore
+    const { userId, orgId } = req.auth;
     try {
       const toDos = await ToDoService.list({ orgId, userId });
       return this.success(res, toDos);
@@ -18,8 +19,9 @@ export default class ToDoController extends BaseController {
 
   create = async (req: RequireAuthProp<Request>, res: Response) => {
     const { body }: { body: CreateToDoDTO } = req;
-    const { userId } = req.auth;
-    const orgId = req.query.orgId?.toString();
+    // TODO: Fix this, waiting on clerk support
+    // @ts-ignore
+    const { userId, orgId } = req.auth;
 
     try {
       if (Object.keys(body).length === 0) {

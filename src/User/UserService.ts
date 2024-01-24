@@ -69,6 +69,9 @@ export default class UserService {
     role: string;
     orgId: string;
   }) => {
+    if (!orgId || !userId || !role) {
+      throw new Error("orgId, userId, and role are required");
+    }
     await clerkClient.organizations.updateOrganizationMembership({
       organizationId: orgId,
       userId,

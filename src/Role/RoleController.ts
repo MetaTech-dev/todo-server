@@ -5,7 +5,9 @@ import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 
 export default class RoleController extends BaseController {
   list = async (req: RequireAuthProp<Request>, res: Response) => {
-    const orgId = req.query.orgId?.toString();
+    // TODO: Fix this, waiting on clerk support
+    // @ts-ignore
+    const { orgId } = req.auth;
     if (!orgId) {
       return this.badRequest(res, { message: "orgId is required" });
     }
