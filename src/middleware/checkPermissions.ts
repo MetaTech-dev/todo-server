@@ -30,16 +30,18 @@ const checkPermissions = (requiredPermissions: string[]) => {
     _res: Response,
     next: NextFunction
   ) => {
-    const reqOrgId = req.query.orgId?.toString();
+    // const reqOrgId = req.query.orgId?.toString();
     // TODO: Fix this, waiting on clerk support
     // @ts-ignore
     const { orgId: authOrgId, orgRole: authOrgRole } = req.auth;
     console.log(req.auth);
 
-    if (reqOrgId) {
-      if (reqOrgId !== authOrgId) {
-        return next(new Error("Unauthorized"));
-      }
+    // console.log("reqOrgId", reqOrgId);
+
+    if (authOrgId) {
+      // if (reqOrgId !== authOrgId) {
+      //   return next(new Error("Unauthorized"));
+      // }
 
       const hasPermissions = requiredPermissions.every((requiredPermission) =>
         // TODO: Fix this, waiting on clerk support
