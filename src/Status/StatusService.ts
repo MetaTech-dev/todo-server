@@ -1,15 +1,47 @@
 import { UpdateStatusDTO } from "./statusTypes";
 import prisma from "../../prisma";
 import { Prisma, Status } from "@prisma/client";
+import { defaultStatuses } from "../../prisma/seed";
 
 export default class StatusService {
-  static list = async () => {
+  static list = async ({
+    orgId,
+    userId,
+  }: {
+    orgId?: string;
+    userId: string;
+  }) => {
     try {
       const statusList = await prisma.status.findMany({
+        where: {
+          orgId: orgId ? orgId : userId,
+        },
         orderBy: {
           position: "asc",
         },
       });
+      if (!statusList.length) {
+        // if no statuses exist, create default statuses
+        const createPromises = defaultStatuses.map((status) =>
+          prisma.status.create({
+            data: {
+              ...status,
+              orgId: orgId ? orgId : userId,
+            },
+          })
+        );
+        await Promise.all(createPromises);
+
+        const newStatusList = await prisma.status.findMany({
+          where: {
+            orgId: orgId ? orgId : userId,
+          },
+          orderBy: {
+            position: "asc",
+          },
+        });
+        return newStatusList;
+      }
       return statusList;
     } catch (err) {
       console.error(err);

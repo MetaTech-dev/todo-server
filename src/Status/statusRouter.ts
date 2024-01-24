@@ -1,26 +1,59 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import StatusController from "./StatusController";
-import checkAuth from "../middleware/checkAuth";
 import checkPermissions from "../middleware/checkPermissions";
+import {
+  ClerkExpressRequireAuth,
+  RequireAuthProp,
+} from "@clerk/clerk-sdk-node";
 
 const router = express.Router();
 
 const { list, create, update, updateAll, remove, getOne } =
   new StatusController();
 
-router.get("/", checkAuth, checkPermissions(["read:status"]), list);
-router.post("/", checkAuth, checkPermissions(["create:status"]), create);
-router.put("/:id", checkAuth, checkPermissions(["update:status"]), update);
-router.put("/", checkAuth, checkPermissions(["update:status"]), updateAll);
+router.get(
+  "/",
+  ClerkExpressRequireAuth(),
+  checkPermissions(["read:status"]),
+  list
+);
+router.post(
+  "/",
+  ClerkExpressRequireAuth(),
+  checkPermissions(["create:status"]),
+  create
+);
+router.put(
+  "/:id",
+  ClerkExpressRequireAuth(),
+  checkPermissions(["update:status"]),
+  update
+);
+router.put(
+  "/",
+  ClerkExpressRequireAuth(),
+  checkPermissions(["update:status"]),
+  updateAll
+);
 router.delete(
   "/",
-  checkAuth,
+  ClerkExpressRequireAuth(),
   checkPermissions(["delete:status"]),
-  (_req, res) => {
+  (_req: RequireAuthProp<Request>, res: Response) => {
     return res.status(400).json({ message: "ID is required" });
   }
 );
-router.delete("/:id", checkAuth, checkPermissions(["delete:status"]), remove);
-router.get("/:id", checkAuth, checkPermissions(["read:status"]), getOne);
+router.delete(
+  "/:id",
+  ClerkExpressRequireAuth(),
+  checkPermissions(["delete:status"]),
+  remove
+);
+router.get(
+  "/:id",
+  ClerkExpressRequireAuth(),
+  checkPermissions(["read:status"]),
+  getOne
+);
 
 export default router;

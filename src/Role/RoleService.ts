@@ -1,15 +1,16 @@
-import { ManagementClient } from "auth0";
-
-const management = new ManagementClient({
-  domain: "metatech-todo-dev.us.auth0.com",
-  clientId: "87yrCCRUTtwjvJ8flg5ZhzzB4kI6JMva",
-  clientSecret:
-    "uVB35ukoTqdjP2gQvCIr24Td8jQbQYw3Hb2oTGzPMGqqcy23SnYmAxvgSrAIToqz",
-});
+import clerkClient from "@clerk/clerk-sdk-node";
 
 export default class RoleService {
-  static list = async () => {
-    const roles = await management.roles.getAll();
-    return roles.data;
+  static list = async ({ orgId }: { orgId: string }) => {
+    if (!orgId) {
+      throw new Error("orgId is required");
+    }
+    const organization = await clerkClient.organizations.getOrganization({
+      organizationId: orgId,
+    });
+
+    // TODO: get the list of roles from Clerk, there is no SDK method for this yet
+
+    return ["org:admin", "org:member"];
   };
 }

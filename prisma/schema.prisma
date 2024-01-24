@@ -11,21 +11,25 @@ datasource db {
 }
 
 model ToDo {
-  title           String
-  description     String      @db.Text
-  createdDate     DateTime    @default(now())
-  dueDate         DateTime?
-  priority        String
-  status          Status      @relation(fields: [statusId], references: [id])
-  statusId        Int
-  authorUserId    String      
-  assigneeUserId  String?
-  id              Int         @id @default(autoincrement())
+  title          String
+  description    String    @db.Text
+  createdDate    DateTime  @default(now())
+  dueDate        DateTime?
+  priority       String
+  status         Status    @relation(fields: [statusId], references: [id])
+  statusId       Int
+  authorUserId   String
+  assigneeUserId String?
+  id             Int       @id @default(autoincrement())
+  orgId          String
 }
 
 model Status {
-  title           String      @unique
-  position        Int         
-  id              Int         @id @default(autoincrement())
-  toDos           ToDo[]
+  title    String
+  position Int
+  id       Int    @id @default(autoincrement())
+  toDos    ToDo[]
+  orgId    String
+
+  @@unique([title, orgId])
 }

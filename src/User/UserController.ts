@@ -1,11 +1,18 @@
 import { Request, Response } from "express";
 import BaseController from "../BaseController";
+import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 import UserService from "./UserService";
 
 export default class UserController extends BaseController {
-  list = async (_req: Request, res: Response) => {
+  list = async (req: RequireAuthProp<Request>, res: Response) => {
+    // TODO: Fix this, waiting on clerk support
+    // @ts-ignore
+    const { orgId } = req.auth;
+    if (!orgId) {
+      return this.badRequest(res, { message: "orgId is required" });
+    }
     try {
-      const users = await UserService.list();
+      const users = await UserService.list({ orgId });
 
       return this.success(res, users);
     } catch (err) {
@@ -13,13 +20,17 @@ export default class UserController extends BaseController {
     }
   };
 
-  getOne = async (req: Request, res: Response) => {
+  getOne = async (req: RequireAuthProp<Request>, res: Response) => {
     const { userId } = req.params;
+    // TODO: Fix this, waiting on clerk support
+    // @ts-ignore
+    const { orgId } = req.auth;
     try {
       if (!userId) {
         return this.badRequest(res, { message: "userId is required" });
       }
-      const user = await UserService.getOne(userId);
+
+      const user = await UserService.getOne({ userId, orgId });
 
       return this.success(res, user);
     } catch (err) {
@@ -27,24 +38,23 @@ export default class UserController extends BaseController {
     }
   };
 
-  update = async (req: Request, res: Response) => {
+  update = async (req: RequireAuthProp<Request>, res: Response) => {
     const { userId } = req.params;
     const body = req.body;
-    const auth0UserId = req.auth?.payload.sub;
+
+    const authUserId = req.auth.userId;
     try {
       if (Object.keys(body).length === 0) {
         return this.badRequest(res, { message: "request body is required" });
       } else if (!userId) {
         return this.badRequest(res, { message: "userId is required" });
-      } else if (auth0UserId !== userId) {
+      } else if (authUserId !== userId) {
         return this.unAuthorized(res, {
           message: "You can only update your own user",
         });
       }
 
-      await UserService.update(userId, body);
-
-      const updatedUser = await UserService.getOne(userId);
+      const updatedUser = await UserService.update({ userId, body });
 
       return this.created(res, updatedUser);
     } catch (err) {
@@ -52,19 +62,24 @@ export default class UserController extends BaseController {
     }
   };
 
-  updateRoles = async (req: Request, res: Response) => {
+  updateRole = async (req: RequireAuthProp<Request>, res: Response) => {
     const { userId } = req.params;
-    const { roleIds } = req.body;
+    // TODO: Fix this, waiting on clerk support
+    // @ts-ignore
+    const { orgId } = req.auth;
+    const { role } = req.body;
     try {
       if (!userId) {
         return this.badRequest(res, { message: "userId is required" });
-      } else if (!roleIds) {
-        return this.badRequest(res, { message: "Roles are required" });
+      } else if (!role) {
+        return this.badRequest(res, { message: "role is required" });
+      } else if (!orgId) {
+        return this.badRequest(res, { message: "orgId is required" });
       }
 
-      const assignedUser = await UserService.updateRoles(userId, roleIds);
+      const updatedUser = UserService.updateRole({ userId, role, orgId });
 
-      return this.created(res, assignedUser);
+      return this.created(res, updatedUser);
     } catch (err) {
       return this.badRequest(res, err);
     }
