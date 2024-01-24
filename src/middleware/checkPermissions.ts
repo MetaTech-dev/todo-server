@@ -36,8 +36,6 @@ const checkPermissions = (requiredPermissions: string[]) => {
     const { orgId: authOrgId, orgRole: authOrgRole } = req.auth;
     console.log(req.auth);
 
-    // console.log("reqOrgId", reqOrgId);
-
     if (authOrgId) {
       // if (reqOrgId !== authOrgId) {
       //   return next(new Error("Unauthorized"));

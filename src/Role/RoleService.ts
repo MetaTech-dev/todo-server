@@ -8,7 +8,6 @@ export default class RoleService {
     const organization = await clerkClient.organizations.getOrganization({
       organizationId: orgId,
     });
-    console.log("organization", organization);
 
     // TODO: get the list of roles from Clerk, there is no SDK method for this yet
 
