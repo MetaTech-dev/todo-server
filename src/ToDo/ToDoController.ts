@@ -183,9 +183,15 @@ export default class ToDoController extends BaseController {
         return this.badRequest(res, { message: "ID must be a number" });
       }
       const theToDo = await ToDoService.getOne(Number(id));
-
       if (!theToDo) {
         return this.notFound(res, { message: "ToDo not found" });
+      }
+      // TODO: Fix this, waiting on clerk support
+      if (
+        // @ts-ignore
+        !(theToDo.orgId === req.auth.orgId || theToDo.orgId === req.auth.userId)
+      ) {
+        return this.unAuthorized(res, { message: "Unauthorized" });
       }
 
       return this.success(res, theToDo);

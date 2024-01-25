@@ -130,9 +130,7 @@ export default class ToDoService {
     }
   };
 
-  static getOne = async (
-    id: number
-  ): Promise<ToDo | Prisma.PrismaClientKnownRequestError | null> => {
+  static getOne = async (id: number): Promise<ToDo | null> => {
     try {
       const theOneToDo = await prisma.toDo.findUnique({
         where: {
