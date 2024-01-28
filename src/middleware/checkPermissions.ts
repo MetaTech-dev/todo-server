@@ -34,7 +34,6 @@ const checkPermissions = (requiredPermissions: string[]) => {
     // TODO: Fix this, waiting on clerk support
     // @ts-ignore
     const { orgId: authOrgId, orgRole: authOrgRole } = req.auth;
-    console.log(req.auth);
 
     if (authOrgId) {
       // if (reqOrgId !== authOrgId) {
