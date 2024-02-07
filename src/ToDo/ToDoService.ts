@@ -13,6 +13,7 @@ export default class ToDoService {
     try {
       const allToDos = await prisma.toDo.findMany({
         where: {
+          // if on personal account, no orgId exists, userId is used in its place
           orgId: orgId ? orgId : userId,
         },
         orderBy: {

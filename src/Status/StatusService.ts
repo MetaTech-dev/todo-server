@@ -1,7 +1,21 @@
 import { UpdateStatusDTO } from "./statusTypes";
 import prisma from "../../prisma";
 import { Prisma, Status } from "@prisma/client";
-import { defaultStatuses } from "../../prisma/seed";
+
+const defaultStatuses = [
+  {
+    title: "Ready",
+    position: 1,
+  },
+  {
+    title: "In Progress",
+    position: 2,
+  },
+  {
+    title: "Done",
+    position: 3,
+  },
+];
 
 export default class StatusService {
   static list = async ({
@@ -14,6 +28,7 @@ export default class StatusService {
     try {
       const statusList = await prisma.status.findMany({
         where: {
+          // if on personal account, no orgId exists, userId is used in its place
           orgId: orgId ? orgId : userId,
         },
         orderBy: {
@@ -26,6 +41,7 @@ export default class StatusService {
           prisma.status.create({
             data: {
               ...status,
+              // if on personal account, no orgId exists, userId is used in its place
               orgId: orgId ? orgId : userId,
             },
           })
@@ -34,6 +50,7 @@ export default class StatusService {
 
         const newStatusList = await prisma.status.findMany({
           where: {
+            // if on personal account, no orgId exists, userId is used in its place
             orgId: orgId ? orgId : userId,
           },
           orderBy: {
@@ -53,9 +70,10 @@ export default class StatusService {
     status: Prisma.StatusCreateInput
   ): Promise<Status | Prisma.PrismaClientKnownRequestError> => {
     try {
-      const existingStatus = await prisma.status.findMany({});
+      const existingStatuses = await prisma.status.findMany({});
 
-      const newPosition = existingStatus.length + 1;
+      // new status is always at the end of the list of statuses
+      const newPosition = existingStatuses.length + 1;
 
       const createdStatus = await prisma.status.create({
         data: {
@@ -113,6 +131,7 @@ export default class StatusService {
     }
   };
 
+  // this is primary used for reordering statuses
   static updateAll = async (
     statuses: UpdateStatusDTO[]
   ): Promise<Status[] | Prisma.PrismaClientKnownRequestError> => {
@@ -134,18 +153,18 @@ export default class StatusService {
       throw err as Prisma.PrismaClientKnownRequestError;
     }
   };
+
   static remove = async (
     id: number
   ): Promise<boolean | Error | Prisma.PrismaClientKnownRequestError> => {
     try {
-      // find ID of status to delete
       const statusToDelete = await prisma.status.findUnique({
         where: {
           id,
         },
-        select: {
-          position: true,
-        },
+        // select: {
+        //   position: true,
+        // },
       });
       // if statusToDelete is null, throw error
       if (!statusToDelete) {
@@ -158,7 +177,7 @@ export default class StatusService {
         },
       });
 
-      //update the position of all statuses after the deleted status
+      // update the position of all statuses after the deleted status
       await prisma.status.updateMany({
         where: {
           position: {

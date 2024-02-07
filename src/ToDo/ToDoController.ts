@@ -74,6 +74,7 @@ export default class ToDoController extends BaseController {
         });
       }
 
+      // if on personal account, no orgId exists, userId is used in its place
       if (orgId) {
         body.orgId = orgId;
       } else {
@@ -125,7 +126,7 @@ export default class ToDoController extends BaseController {
       } else if (id && isNaN(Number(id))) {
         return this.badRequest(res, { message: "ID must be a number" });
       } else if (body.assigneeUserId) {
-        const assigneeUser = await await clerkClient.users.getUser(
+        const assigneeUser = await clerkClient.users.getUser(
           body.assigneeUserId
         );
         if (!assigneeUser) {
@@ -135,7 +136,7 @@ export default class ToDoController extends BaseController {
         }
       } else if (!body.authorUserId) {
         return this.badRequest(res, {
-          message: "Only God can create a toDo without a human vessel",
+          message: "Only God can update a toDo without a human vessel",
         });
       }
       const updatedToDo = await ToDoService.update(body);
@@ -186,8 +187,9 @@ export default class ToDoController extends BaseController {
       if (!theToDo) {
         return this.notFound(res, { message: "ToDo not found" });
       }
-      // TODO: Fix this, waiting on clerk support
+      // this validates that the user is authorized to view the toDo
       if (
+        // TODO: Fix this, waiting on clerk support
         // @ts-ignore
         !(theToDo.orgId === req.auth.orgId || theToDo.orgId === req.auth.userId)
       ) {

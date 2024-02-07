@@ -1,6 +1,7 @@
 import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 import { Request, Response, NextFunction } from "express";
 
+// TODO: Fix this, waiting on clerk support
 const permissionsOnRoles = {
   "org:admin": [
     "org:create:status",
@@ -30,16 +31,11 @@ const checkPermissions = (requiredPermissions: string[]) => {
     _res: Response,
     next: NextFunction
   ) => {
-    // const reqOrgId = req.query.orgId?.toString();
     // TODO: Fix this, waiting on clerk support
     // @ts-ignore
     const { orgId: authOrgId, orgRole: authOrgRole } = req.auth;
 
     if (authOrgId) {
-      // if (reqOrgId !== authOrgId) {
-      //   return next(new Error("Unauthorized"));
-      // }
-
       const hasPermissions = requiredPermissions.every((requiredPermission) =>
         // TODO: Fix this, waiting on clerk support
         // @ts-ignore

@@ -15,12 +15,12 @@ declare global {
 }
 
 const app: Application = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
-app.disable("etag");
+app.disable("etag"); // disable caching for authenticated routes
 
 app.get("/", (_req: RequireAuthProp<Request>, res: Response) => {
   res.send("Hello World!");
@@ -29,6 +29,7 @@ app.get("/", (_req: RequireAuthProp<Request>, res: Response) => {
 app.use(router);
 app.use(errorHandler);
 
+// for Production use HTTPS
 if (process.env.USE_HTTPS === "true") {
   const httpsServer = https.createServer(
     {
@@ -45,6 +46,7 @@ if (process.env.USE_HTTPS === "true") {
   httpsServer.listen(443, () => {
     console.log("HTTPS Server running on port 443");
   });
+  // for Development use HTTP
 } else {
   app.listen(port, () => {
     console.log(`[Server] running at https://localhost:${port}`);

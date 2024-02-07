@@ -32,7 +32,7 @@ export default class StatusController extends BaseController {
       } else if (typeof body.title !== "string") {
         return this.badRequest(res, { message: "Title must be a string" });
       }
-
+      // if orgId is present, use it, otherwise use userId
       if (orgId) {
         body.orgId = orgId;
       } else {

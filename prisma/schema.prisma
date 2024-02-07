@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,6 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+// if no orgId, orgId === userId
 model ToDo {
   title          String
   description    String    @db.Text
@@ -24,6 +23,7 @@ model ToDo {
   orgId          String
 }
 
+// if no orgId, orgId === userId
 model Status {
   title    String
   position Int
