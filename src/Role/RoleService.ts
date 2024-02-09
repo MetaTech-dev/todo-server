@@ -1,6 +1,7 @@
 // import clerkClient from "@clerk/clerk-sdk-node";
 
 export default class RoleService {
+  // deprecated
   static list = async ({ orgId }: { orgId: string }) => {
     if (!orgId) {
       throw new Error("orgId is required");

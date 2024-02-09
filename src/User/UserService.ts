@@ -60,6 +60,7 @@ export default class UserService {
     }
   };
 
+  // deprecated
   static updateRole = async ({
     userId,
     role,

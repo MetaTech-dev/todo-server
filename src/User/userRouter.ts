@@ -20,6 +20,8 @@ router.put(
   checkPermissions(["update:user"]),
   update
 );
+
+// deprecated
 router.put(
   "/:userId/role",
   ClerkExpressRequireAuth(),

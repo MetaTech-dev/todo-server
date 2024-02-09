@@ -62,6 +62,7 @@ export default class UserController extends BaseController {
     }
   };
 
+  // deprecated
   updateRole = async (req: RequireAuthProp<Request>, res: Response) => {
     const { userId } = req.params;
     // TODO: Fix this, waiting on clerk support

@@ -4,6 +4,7 @@ import RoleService from "./RoleService";
 import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 
 export default class RoleController extends BaseController {
+  // deprecated
   list = async (req: RequireAuthProp<Request>, res: Response) => {
     // TODO: Fix this, waiting on clerk support
     // @ts-ignore
