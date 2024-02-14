@@ -10,3 +10,9 @@
 ## Notes
 
 - currently, if there's no orgId we are using userId
+- as Clerk rolls out updates, this API will likely get updated and optimised to take advantage of those features
+
+### Contributors
+
+- Zaq Reynolds
+- Matthew Whitney
