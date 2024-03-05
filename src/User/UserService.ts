@@ -43,16 +43,20 @@ export default class UserService {
           organizationId: orgId,
         });
 
-      const usersWithRole = users.map((user) => {
+      const usersWithRole = users.reduce((acc: { role: string }[], user) => {
         const organizationMembership = organizationMembershipList.find(
           (organizationMembership) =>
             organizationMembership.publicUserData?.userId === user.id
         );
-        return {
-          ...user,
-          role: organizationMembership?.role,
-        };
-      });
+
+        if (organizationMembership) {
+          acc.push({
+            ...user,
+            role: organizationMembership.role,
+          });
+        }
+        return acc;
+      }, []);
 
       return usersWithRole;
     } else {
