@@ -43,20 +43,23 @@ export default class UserService {
           organizationId: orgId,
         });
 
-      const usersWithRole = users.reduce((acc: { role: string }[], user) => {
-        const organizationMembership = organizationMembershipList.find(
-          (organizationMembership) =>
-            organizationMembership.publicUserData?.userId === user.id
-        );
-
-        if (organizationMembership) {
-          acc.push({
+      const usersWithRole = users
+        .filter((user) =>
+          organizationMembershipList.some(
+            (organizationMembership) =>
+              organizationMembership.publicUserData?.userId === user.id
+          )
+        )
+        .map((user) => {
+          const organizationMembership = organizationMembershipList.find(
+            (organizationMembership) =>
+              organizationMembership.publicUserData?.userId === user.id
+          );
+          return {
             ...user,
-            role: organizationMembership.role,
-          });
-        }
-        return acc;
-      }, []);
+            role: organizationMembership?.role,
+          };
+        });
 
       return usersWithRole;
     } else {
