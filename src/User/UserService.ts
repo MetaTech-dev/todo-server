@@ -43,16 +43,23 @@ export default class UserService {
           organizationId: orgId,
         });
 
-      const usersWithRole = users.map((user) => {
-        const organizationMembership = organizationMembershipList.find(
-          (organizationMembership) =>
-            organizationMembership.publicUserData?.userId === user.id
-        );
-        return {
-          ...user,
-          role: organizationMembership?.role,
-        };
-      });
+      const usersWithRole = users
+        .filter((user) =>
+          organizationMembershipList.some(
+            (organizationMembership) =>
+              organizationMembership.publicUserData?.userId === user.id
+          )
+        )
+        .map((user) => {
+          const organizationMembership = organizationMembershipList.find(
+            (organizationMembership) =>
+              organizationMembership.publicUserData?.userId === user.id
+          );
+          return {
+            ...user,
+            role: organizationMembership?.role,
+          };
+        });
 
       return usersWithRole;
     } else {
