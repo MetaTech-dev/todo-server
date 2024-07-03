@@ -3,8 +3,6 @@ import router from "./router";
 import morgan from "morgan";
 import cors from "cors";
 import { errorHandler } from "./middleware/errorHandler";
-import https from "https";
-import fs from "fs";
 import { RequireAuthProp, StrictAuthProp } from "@clerk/clerk-sdk-node";
 import "dotenv/config";
 
@@ -20,7 +18,6 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
-app.disable("etag"); // disable caching for authenticated routes
 
 app.get("/", (_req: RequireAuthProp<Request>, res: Response) => {
   res.send("Hello World!");
@@ -29,26 +26,6 @@ app.get("/", (_req: RequireAuthProp<Request>, res: Response) => {
 app.use(router);
 app.use(errorHandler);
 
-// for Production use HTTPS
-if (process.env.USE_HTTPS === "true") {
-  const httpsServer = https.createServer(
-    {
-      key: fs.readFileSync(
-        "/etc/letsencrypt/live/todo-api.metatech.dev/privkey.pem"
-      ),
-      cert: fs.readFileSync(
-        "/etc/letsencrypt/live/todo-api.metatech.dev/fullchain.pem"
-      ),
-    },
-    app
-  );
-
-  httpsServer.listen(443, () => {
-    console.log("HTTPS Server running on port 443");
-  });
-  // for Development use HTTP
-} else {
-  app.listen(port, () => {
-    console.log(`[Server] running at https://localhost:${port}`);
-  });
-}
+app.listen(port, () => {
+  console.log(`[Server] running at https://localhost:${port}`);
+});
